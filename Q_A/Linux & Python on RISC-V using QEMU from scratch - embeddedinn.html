@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.21.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html class=" js " lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><style>
+    .utterances {
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .utterances-frame {
+      color-scheme: light;
+      position: absolute;
+      left: 0;
+      right: 0;
+      width: 1px;
+      min-width: 100%;
+      max-width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Linux &amp; Python on RISC-V using QEMU from scratch - embeddedinn</title>
+<meta name="description" content="This article explores how to set up RISC-V on QEMU, boot a simple application on it using the PK kernel, and boot a cross-compiled Linux on the emulation platform. We top it by booting a standard Linux distro with python support.">
+
+
+  <meta name="author" content="Vysakh P Pillai">
+  
+  <meta property="article:author" content="Vysakh P Pillai">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="embeddedinn">
+<meta property="og:title" content="Linux &amp; Python on RISC-V using QEMU from scratch">
+<meta property="og:url" content="https://www.embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/">
+
+
+  <meta property="og:description" content="This article explores how to set up RISC-V on QEMU, boot a simple application on it using the PK kernel, and boot a cross-compiled Linux on the emulation platform. We top it by booting a standard Linux distro with python support.">
+
+
+
+  <meta property="og:image" content="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image13.png">
+
+
+
+  <meta name="twitter:site" content="@vysakhpillai">
+  <meta name="twitter:title" content="Linux &amp; Python on RISC-V using QEMU from scratch">
+  <meta name="twitter:description" content="This article explores how to set up RISC-V on QEMU, boot a simple application on it using the PK kernel, and boot a cross-compiled Linux on the emulation platform. We top it by booting a standard Linux distro with python support.">
+  <meta name="twitter:url" content="https://www.embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/">
+
+  
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image13.png">
+  
+
+  
+
+
+
+  <meta property="article:published_time" content="2021-01-11T15:31:06+00:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="https://www.embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Vysakh P Pillai",
+      "url": "https://www.embeddedinn.xyz/"
+    
+  }
+</script>
+
+
+  <meta name="google-site-verification" content="hy0r2zEimKVyuphUFhVOvubQenHH61ppOE3FeD1Tflg">
+
+
+  <meta name="msvalidate.01" content="CBA94B5F2A88B24FF2AEC7144F5DFA65">
+
+
+
+
+<!-- end _includes/seo.html -->
+
+<!--source: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_scroll_to_top-->
+<style>
+#myBtn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  background-color: #f99514;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 100px;
+}
+
+#myBtn:hover {
+  background-color: #555;
+}
+</style>
+<script>
+// When the user scrolls down 50px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+    document.getElementById("myBtn").style.display = "block";
+  } else {
+    document.getElementById("myBtn").style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}
+</script>
+<style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style></head><body class="layout--single wide"><button onclick="topFunction()" id="myBtn" title="Go to top" style="display: none;">^</button> 
+
+
+
+<link href="https://embeddedinn.xyz/feed.xml" type="application/atom+xml" rel="alternate" title="embeddedinn Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/main.css">
+<link rel="stylesheet" href="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/all.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+<link rel="icon" type="image/png" sizes="32x32" href="https://embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/assets/images/favicon-16x16.png">
+<link rel="shortcut icon" href="https://embeddedinn.xyz/articles/tutorial/Linux-Python-on-RISCV-using-QEMU-from-scratch/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<!-- end custom head snippets -->
+
+  
+
+  
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+      
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="https://embeddedinn.xyz/"><img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/apple-icon-57x57.png" alt=""></a>
+        
+        <a class="site-title" href="https://embeddedinn.xyz/">
+          embeddedinn
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="https://embeddedinn.xyz/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="https://embeddedinn.xyz/tutorials/">Tutorials and writeups</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button" count="0">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+  
+    
+
+
+
+<nav class="breadcrumbs">
+  <ol itemscope="" itemtype="https://schema.org/BreadcrumbList">
+    
+    
+    
+      
+        <li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+          <a href="https://www.embeddedinn.xyz/" itemprop="item"><span itemprop="name">Home</span></a>
+          <meta itemprop="position" content="1">
+        </li>
+        <span class="sep">/</span>
+      
+      
+        
+        <li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+          <a href="https://embeddedinn.xyz/categories/#articles" itemprop="item"><span itemprop="name">Articles</span></a>
+          <meta itemprop="position" content="2">
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        
+        <li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+          <a href="https://embeddedinn.xyz/categories/#tutorial" itemprop="item"><span itemprop="name">Tutorial</span></a>
+          <meta itemprop="position" content="3">
+        </li>
+        <span class="sep">/</span>
+      
+    
+      
+      
+        <li class="current">Linux &amp; Python on RISC-V using QEMU from scratch</li>
+      
+    
+  </ol>
+</nav>
+
+  
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope="" itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/bio-photo.jpg" alt="Vysakh P Pillai" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Vysakh P Pillai</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>maker, tech enthusiast, embedded systems expert and system integration specialist</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope="" itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Bangalore, India</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="mailto:vysakhpillai@gmail.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/vysakhpillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://facebook.com/vysakhpillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-facebook-square" aria-hidden="true"></i><span class="label">Facebook</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/vppillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/vysakh-pillai/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin-in" aria-hidden="true"></i><span class="label">Linkedin</span></a></li>
+          
+        
+          
+            <li><a href="https://www.youtube.com/embeddedinn?sub_confirmation=1" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-youtube" aria-hidden="true"></i><span class="label">Youtube</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope="" itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Linux &amp; Python on RISC-V using QEMU from scratch">
+    <meta itemprop="description" content="This article explores how to set up RISC-V on QEMU, boot a simple application on it using the PK kernel, and boot a cross-compiled Linux on the emulation platform. We top it by booting a standard Linux distro with python support.">
+    <meta itemprop="datePublished" content="2021-01-11T15:31:06+00:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Linux &amp; Python on RISC-V using QEMU from scratch
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2021-01-11T15:31:06+00:00">January 11, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          6 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <style>
+div {
+  text-align: justify;
+  text-justify: inter-word;
+}
+</style>
+
+<h2 id="introduction">Introduction<a class="header-link" href="#introduction" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+<p>As of today, RISC-V hardware is not always easy to come by on a 
+hobbyist budget. But this need not stop you from exploring the 
+ecosystem. This article explores how to set up RISC-V on QEMU, boot a 
+simple application on it using the PK kernel, and boot a cross-compiled 
+Linux on the emulation platform. We top it by booting a standard Linux 
+distro with python support.</p>
+
+<p>We will be compiling all the tools from scratch to get a good 
+familiarity with the pieces involved. There is quite a lot of info 
+already available out there. So, it might be overwhelming for a 
+beginner. This article brings together the end to end flow into a single
+ document.</p>
+
+<h2 id="familiarizing-the-toolchain-using-spike">Familiarizing the toolchain using spike<a class="header-link" href="#familiarizing-the-toolchain-using-spike" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+
+<p>We need a bunch of tools to get started.</p>
+
+<ol>
+  <li>
+    <p><a href="https://github.com/riscv/riscv-gnu-toolchain">riscv-gnu-toolchain</a> is the toolchain to compile applications for RISC-V. Two flavors run on Linux:</p>
+
+    <ul>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">riscv64-­unknown-­elf-gcc</code> that uses <code class="language-plaintext highlighter-rouge">newlib</code> and is used for small statically linked standalone programs and embedded targets.</p>
+      </li>
+      <li>
+        <p><code class="language-plaintext highlighter-rouge">riscv64-unknown-­linux-­gnu-­gcc</code> that uses <code class="language-plaintext highlighter-rouge">glibc</code> and can be used to build programs that can be dynamically linked and executed on an OS like Linux.</p>
+      </li>
+    </ul>
+
+    <blockquote>
+      <p>if you compile with <code class="language-plaintext highlighter-rouge">-nostartfiles -nostdlib -nostdinc</code> both the toolchains will work the same way.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p><a href="https://github.com/riscv/riscv-isa-sim">spike</a> is a 
+RISC-V ISA Simulator that is the golden reference for the ISA. It 
+provides full system emulation or proxied emulation (using <code class="language-plaintext highlighter-rouge">HTIF</code>/<a href="https://github.com/riscv/riscv-isa-sim/tree/master/fesvr">FESVR</a>). It is the universal starting point to explore RISC-V targeted software.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/riscv/riscv-pk">RISC-V Proxy Kernel</a>, commonly known as <code class="language-plaintext highlighter-rouge">pk</code>
+ is an application execution environment that can host statically linked
+ RISC-V ELF binaries. Besides initialization and basic system setup, <code class="language-plaintext highlighter-rouge">pk</code>
+ primarily traps I/O system calls in a tethered I/O limited environment 
+and proxies them to the host. If the RISC-V core runs tethered to an 
+actual host over <code class="language-plaintext highlighter-rouge">FESVR</code>, <code class="language-plaintext highlighter-rouge">pk</code> send it back to the host. In the case of <code class="language-plaintext highlighter-rouge">spike</code>, the requests are relayed back to the OS hosting <code class="language-plaintext highlighter-rouge">spike.</code></p>
+  </li>
+</ol>
+
+<p>I thought the easiest way to get all the tools in one-shot is to using the <a href="https://github.com/riscv/riscv-tools">riscv-tools</a> repo.</p>
+
+<p>So, I started by installing the dependencies with:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">sudo </span>apt <span class="nb">install </span>autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev <span class="se">\</span>
+                 libusb-1.0-0-dev gawk build-essential bison flex texinfo gperf libtool <span class="se">\</span>
+                 patchutils bc zlib1g-dev device-tree-compiler pkg-config libexpat-dev  <span class="se">\</span>
+                 libncurses5-dev libncursesw5-dev
+</code></pre></div></div>
+
+<p>Then clone the repo, init submodules, export the install location and trigger the build with :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>git clone https://github.com/riscv/riscv-tools.git
+git submodule update <span class="nt">--init</span> <span class="nt">--recursive</span>
+<span class="nb">export </span><span class="nv">RISCV</span><span class="o">=</span>~/riscv
+./build.sh
+</code></pre></div></div>
+
+<p>But since the <a href="https://github.com/riscv/riscv-tools">riscv-tools</a> repo is not actively maintained, I ended up getting an error during compilation</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image1.png" title="riscv-tools build error" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image1.png" alt="riscv-tools build error" width="640">
+    
+    </a>
+
+    
+        <p class="image-caption">riscv-tools build error</p>
+    
+</div>
+
+<p>So, I decided to compile each tool manually.</p>
+
+<p>For the GCC tools,</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>git clone https://github.com/riscv/riscv-gnu-toolchain
+<span class="nb">cd </span>riscv-gnu-toolchain
+./configure <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$RISCV</span>
+</code></pre></div></div>
+
+<p>Pass the option <code class="language-plaintext highlighter-rouge">--enable-multilib</code> to build the toolchain with 32-bit and 64-bit support.</p>
+
+<p>To compile the embedded toolchain simply do <code class="language-plaintext highlighter-rouge">make -j $(nproc)</code>. For the linux version, give <code class="language-plaintext highlighter-rouge">make -j $(nproc) linux</code> .</p>
+
+<p>This will clone all required submodules and compile the toolchain and
+ install it to the $RISCV folder. At the end of the process, we will 
+have both the toolchains.</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image2.png" title="our newly-compiled GCC toolchain" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image2_002.png" alt="our newly-compiled GCC toolchain" width="480">
+    
+    </a>
+
+    
+        <p class="image-caption">our newly-compiled GCC toolchain</p>
+    
+</div>
+
+<p>Next, we compile spike from the <a href="https://github.com/riscv/riscv-isa-sim">riscv-isa-sim</a> repo. From the cloned repo, give:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">mkdir </span>build
+<span class="nb">cd </span>build
+../configure <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$RISCV</span>
+make <span class="nt">-j</span> <span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>This will generate <code class="language-plaintext highlighter-rouge">spike</code> tools:</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image3.png" title="Generated spike tools" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image3.png" alt="Generated spike tools" width="240">
+    
+    </a>
+
+    
+        <p class="image-caption">Generated spike tools</p>
+    
+</div>
+
+<p>We now need to compile <a href="https://github.com/riscv/riscv-pk">riscv-pk</a> to bootstrap bare-metal programs in <code class="language-plaintext highlighter-rouge">spike.</code> Make sure that the path where you installed the <code class="language-plaintext highlighter-rouge">GCC</code> toolchain is available in <code class="language-plaintext highlighter-rouge">PATH.</code> From the cloned repo, give:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">mkdir </span>build
+<span class="nb">cd </span>build
+../configure <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$RISCV</span> <span class="nt">--host</span><span class="o">=</span>riscv64-unknown-elf
+make <span class="nt">-j</span> <span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>This will generate the following tools:</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image4.png" title="Generated `PK` and bbl" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image4.png" alt="Generated `PK` and bbl" width="240">
+    
+    </a>
+
+    
+        <p class="image-caption">Generated `PK` and bbl</p>
+    
+</div>
+
+<p><code class="language-plaintext highlighter-rouge">bbl</code> is the Berkeley bootloader, which is a supervisor execution environment for tethered RISC-V systems.</p>
+
+<p>Moment of truth. Let us compile and run a hello world application with RISC-V simulation in spike.</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image5.png" title="Successful first bare-metal program" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image5.png" alt="Successful first bare-metal program" width="620">
+    
+    </a>
+
+    
+        <p class="image-caption">Successful first bare-metal program</p>
+    
+</div>
+
+<p>This gives us confidence that the toolchain we just built is working.</p>
+
+<p>Spike also has a bunch of debug capabilities. For now, we are not 
+going into the details of a debugging setup since we want first to set 
+up <code class="language-plaintext highlighter-rouge">QEMU</code> and run <code class="language-plaintext highlighter-rouge">riscv-linux.</code></p>
+
+<h2 id="setting-up-qemu-for-risc-v-emulation">Setting-up QEMU for RISC-V emulation<a class="header-link" href="#setting-up-qemu-for-risc-v-emulation" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+
+<p>What we saw with spike is essentially bare-metal simulation with 
+support from pk. While it can be done, running whole Linux operating 
+systems in spike is not efficient. We will use system emulation with <code class="language-plaintext highlighter-rouge">QEMU</code> for that.</p>
+
+<p><a href="https://github.com/riscv/riscv-qemu">riscv-qemu</a> has been mainstreamed a while back. So, we will use the <a href="https://git.qemu.org/?p=qemu.git;a=summary">upstream QEMU repository</a>.</p>
+
+<p>First, install the dependencies.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">sudo </span>apt <span class="nb">install </span>ninja-build libglib2.0-dev libpixman-1-dev
+</code></pre></div></div>
+
+<p>Clone the repo and move to the latest release tag:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>git clone https://git.qemu.org/git/qemu.git
+git checkout v5.2.0
+./configure <span class="nt">--target-list</span><span class="o">=</span>riscv64-softmmu,riscv64-linux-user <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$RISCV</span>
+make <span class="nt">-j</span> <span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>This will generate the following files.</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image6.png" title="newly built QEMU tools" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image6.png" alt="newly built QEMU tools" width="320">
+    
+    </a>
+
+    
+        <p class="image-caption">newly built QEMU tools</p>
+    
+</div>
+
+<h2 id="compiling-the-latest-linux-kernel-busybox-and-creating-a-rootfs">Compiling the latest Linux kernel, busybox and creating a rootFS<a class="header-link" href="#compiling-the-latest-linux-kernel-busybox-and-creating-a-rootfs" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+
+<p>First, install some more deps</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">sudo </span>apt <span class="nb">install </span>libncurses5-dev libncursesw5-dev
+</code></pre></div></div>
+
+<h3 id="compiling-the-kernel">Compiling the kernel<a class="header-link" href="#compiling-the-kernel" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h3>
+
+<p>We need to cross-compile the kernel and <code class="language-plaintext highlighter-rouge">busybox</code> separately. To get the latest Linux kernel and compile it with the toolchain we compiled, follow these steps:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>git clone https://github.com/torvalds/linux.git
+<span class="nb">cd </span>linux
+git checkout v5.10
+make <span class="nv">ARCH</span><span class="o">=</span>riscv <span class="nv">CROSS_COMPILE</span><span class="o">=</span>riscv64-unknown-linux-gnu- defconfig
+make <span class="nv">ARCH</span><span class="o">=</span>riscv <span class="nv">CROSS_COMPILE</span><span class="o">=</span>riscv64-unknown-linux-gnu- <span class="nt">-j</span> <span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+</code></pre></div></div>
+
+<p><strong><em>Note</em></strong>: In this iteration, we are building a Linux kernel with the default options.</p>
+
+<p>At the end of this build, we will have the compressed, bootable RISC-V kernel in <code class="language-plaintext highlighter-rouge">linux/arch/riscv/boot/Image</code></p>
+
+<h3 id="compiling-busybox">Compiling busybox.<a class="header-link" href="#compiling-busybox" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h3>
+
+<p>For the uninitiated, busybox clubs, many userland tools into a single binary and can finally give us the shell at boot.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>git clone https://git.busybox.net/busybox
+<span class="nb">cd </span>busybox
+git checkout 1_32_1
+<span class="nv">CROSS_COMPILE</span><span class="o">=</span>riscv64-unknown-linux-gnu- make defconfig
+<span class="nv">CROSS_COMPILE</span><span class="o">=</span>riscv64-unknown-linux-gnu- make menuconfig
+</code></pre></div></div>
+
+<p>Enable static linking under <code class="language-plaintext highlighter-rouge">settings</code> to make it easier to prepare the rootFS later.</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image7.png" title="Build options for statically linked `busybox`" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image7.png" alt="Build options for statically linked `busybox`" width="620">
+    
+    </a>
+
+    
+        <p class="image-caption">Build options for statically linked `busybox`</p>
+    
+</div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nv">CROSS_COMPILE</span><span class="o">=</span>riscv64-unknown-linux-gnu- make <span class="nt">-j</span> <span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+</code></pre></div></div>
+
+<h3 id="creating-a-rootfs">Creating a rootFS<a class="header-link" href="#creating-a-rootfs" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h3>
+
+<p>First , we will create a NULL disk and format it as an ext2</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">dd </span><span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>root.bin <span class="nv">bs</span><span class="o">=</span>1M <span class="nv">count</span><span class="o">=</span>64
+mkfs.ext2 <span class="nt">-F</span> root.bin
+
+</code></pre></div></div>
+
+<p>We will then locally mount the newly created disk image, create the bare minimum files and copy the <code class="language-plaintext highlighter-rouge">busybox</code> we compiled.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">mkdir </span>mnt
+<span class="nb">sudo </span>mount <span class="nt">-o</span> loop root.bin mnt
+<span class="nb">cd </span>mnt 
+<span class="nb">sudo mkdir</span> <span class="nt">-p</span> bin etc dev lib proc sbin tmp usr usr/bin usr/lib usr/sbin
+<span class="nb">sudo cp</span> ~/busybox/busybox bin
+<span class="nb">sudo ln</span> <span class="nt">-s</span> ../bin/busybox sbin/init
+<span class="nb">sudo ln</span> <span class="nt">-s</span> ../bin/busybox bin/sh
+<span class="nb">cd</span> ..
+<span class="nb">sudo </span>umount mnt
+</code></pre></div></div>
+
+<p>Now the rootFS looks like this:</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image8.png" title="rootFS tree" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image8.png" alt="rootFS tree" width="320">
+    
+    </a>
+
+    
+        <p class="image-caption">rootFS tree</p>
+    
+</div>
+
+<p>We have intentionally avoided creating an <code class="language-plaintext highlighter-rouge">inittab</code>
+ since this manual process is more for understanding the process. We are
+ relying on Kernel defaults. A full-fledged rootFS can be created using <code class="language-plaintext highlighter-rouge">buildroot</code> / <code class="language-plaintext highlighter-rouge">Yocto</code>.</p>
+
+<h2 id="first-qemu-boot">First <code class="language-plaintext highlighter-rouge">QEMU</code> boot<a class="header-link" href="#first-qemu-boot" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+
+<p>Boot the Linux image in our <code class="language-plaintext highlighter-rouge">QEMU</code> using</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>qemu-system-riscv64 <span class="nt">-nographic</span> <span class="nt">-machine</span> virt <span class="se">\</span>
+                    <span class="nt">-kernel</span> linux/arch/riscv/boot/Image <span class="se">\</span>
+                    <span class="nt">-append</span> <span class="s2">"root=/dev/vda rw console=ttyS0"</span> <span class="se">\</span>
+                    <span class="nt">-drive</span> <span class="nv">file</span><span class="o">=</span>root.bin,format<span class="o">=</span>raw,id<span class="o">=</span>hd0 <span class="se">\</span>
+                    <span class="nt">-device</span> virtio-blk-device,drive<span class="o">=</span>hd0
+</code></pre></div></div>
+
+<p><strong><em><span class="underline">Note</span></em></strong>: to exit <code class="language-plaintext highlighter-rouge">QEMU</code>, type <code class="language-plaintext highlighter-rouge">CTRL+a</code> then <code class="language-plaintext highlighter-rouge">x</code>.</p>
+
+<p>At boot, execute the following command to make busybox install all the required utility mappings</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>/bin/busybox <span class="nt">--install</span> <span class="nt">-s</span>
+</code></pre></div></div>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image9.png" title="SUCCESS!!" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image9.png" alt="SUCCESS!!" width="620">
+    
+    </a>
+
+    
+        <p class="image-caption">SUCCESS!!</p>
+    
+</div>
+
+<h2 id="running-an-actual-os">Running an actual OS<a class="header-link" href="#running-an-actual-os" title="Permalink"><span class="sr-only">Permalink</span><i class="fas fa-link"></i></a></h2>
+
+<p>To build an embedded target rootFS, we typically use <code class="language-plaintext highlighter-rouge">buildroot</code> or <code class="language-plaintext highlighter-rouge">Yocto</code>. But, I decided to use a standard OS to start a complete RISC-V exploration.</p>
+
+<blockquote>
+  <p>If buildroot is used use the <code class="language-plaintext highlighter-rouge">qemu_riscv64_virt_defconfig</code> config and boot with the command below:</p>
+</blockquote>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>qemu-system-riscv64 <span class="nt">-nographic</span> <span class="nt">-machine</span> virt <span class="nt">-kernel</span> output/images/Image <span class="se">\</span>
+                    <span class="nt">-append</span> <span class="s2">"root=/dev/vda rw console=ttyS0"</span>             <span class="se">\</span>
+                    <span class="nt">-drive</span> <span class="nv">file</span><span class="o">=</span>output/images/rootfs.ext2,format<span class="o">=</span>raw,id<span class="o">=</span>hd0<span class="se">\</span>
+                    <span class="nt">-device</span> virtio-blk-device,drive<span class="o">=</span>hd0
+</code></pre></div></div>
+
+<p>We start by installing <code class="language-plaintext highlighter-rouge">virt-builder</code>, a tool that lets us quickly build virtual machines.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">sudo </span>apt <span class="nb">install </span>libguestfs-tools
+</code></pre></div></div>
+
+<p>By default RISC-V images wont appear in the list. So, we configure the builder repos to be able to pull fedora images.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.config/virt-builder/repos.d/
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> &gt; ~/.config/virt-builder/repos.d/fedora-riscv.conf
+[fedora-riscv]
+uri=https://dl.fedoraproject.org/pub/alt/risc-v/repo/virt-builder-images/images/index
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<p>Now, we can see the RISC-V images by giving the command</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>virt-builder <span class="nt">--list</span> | <span class="nb">grep </span>riscv64
+</code></pre></div></div>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image10.png" title="looking for fedora images" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image10.png" alt="looking for fedora images" width="530">
+    
+    </a>
+
+    
+        <p class="image-caption">looking for fedora images</p>
+    
+</div>
+
+<p>We now get the raw disk image and unzip it with :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>wget https://dl.fedoraproject.org/pub/alt/risc-v/repo/virt-builder-images/images/Fedora-Developer-Rawhide-20200108.n.0-sda.raw.xz
+unxz <span class="nt">-k</span> Fedora-Developer-Rawhide-20200108.n.0-sda.raw.xz
+</code></pre></div></div>
+
+<p>This will create the file <code class="language-plaintext highlighter-rouge">Fedora-Developer-Rawhide-20200108.n.0-sda.raw</code></p>
+
+<p>We also need the bootloader. For this, find and download the image using:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>virt-builder <span class="nt">--arch</span> riscv64 <span class="nt">--notes</span> fedora-rawhide-developer-20200108.n.0 | <span class="nb">grep </span>fw<span class="se">\_</span>payload
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code>wget https://dl.fedoraproject.org/pub/alt/risc-v/repo/virt-builder-images/images/Fedora-Developer-Rawhide-20200108.n.0-fw<span class="se">\_</span>payload-uboot-qemu-virt-smode.elf
+</code></pre></div></div>
+
+<p>Now boot fedora with:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><button style="position: absolute; right: 1em;" class="btn btn--primary" data-clipboard-copy=""><i class="far fa-copy"></i></button><code><span class="nb">export </span><span class="nv">VER</span><span class="o">=</span>20200108.n.0
+qemu-system-riscv64 <span class="nt">-machine</span> virt 
+                    <span class="nt">-nographic</span> <span class="se">\</span>
+                    <span class="nt">-smp</span> 4 <span class="se">\</span>
+                    <span class="nt">-m</span> 8G <span class="se">\</span>
+                    <span class="nt">-kernel</span> Fedora-Developer-Rawhide-<span class="k">${</span><span class="nv">VER</span><span class="k">}</span><span class="nt">-fw_payload-uboot-qemu-virt-smode</span>.elf <span class="se">\</span>
+                    <span class="nt">-object</span> rng-random,filename<span class="o">=</span>/dev/urandom,id<span class="o">=</span>rng0 <span class="se">\</span>
+                    <span class="nt">-device</span> virtio-rng-device,rng<span class="o">=</span>rng0 <span class="se">\</span>
+                    <span class="nt">-device</span> virtio-blk-device,drive<span class="o">=</span>hd0 <span class="se">\</span>
+                    <span class="nt">-drive</span> <span class="nv">file</span><span class="o">=</span>Fedora-Developer-Rawhide-<span class="k">${</span><span class="nv">VER</span><span class="k">}</span><span class="nt">-sda</span>.raw,format<span class="o">=</span>raw,id<span class="o">=</span>hd0 <span class="se">\</span>
+                    <span class="nt">-device</span> virtio-net-device,netdev<span class="o">=</span>usernet <span class="se">\</span>
+                    <span class="nt">-netdev</span> user,id<span class="o">=</span>usernet,hostfwd<span class="o">=</span>tcp::3333-:22
+</code></pre></div></div>
+
+<p>You can see the system info after boot</p>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image11.png" title="RISC-V QEMU cpuinfo" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image11.png" alt="RISC-V QEMU cpuinfo" width="620">
+    
+    </a>
+
+    
+        <p class="image-caption">RISC-V QEMU cpuinfo</p>
+    
+</div>
+
+<!-- reference from : https://superdevresources.com/image-caption-jekyll/-->
+<style>
+.image-wrapper {
+  text-align: center;
+}    
+
+.image-wrapper .image-caption {
+  color: gray;
+  margin-top: em / 3;
+}
+
+</style>
+
+<!-- _includes/image.html -->
+<div class="image-wrapper">
+    <a href="https://www.embeddedinn.xyz/images/posts/riscv_qemu/image12.png" title="Python3 on RISC-V + Linux" target="_blank" class="image-popup">
+    
+    <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image12.png" alt="Python3 on RISC-V + Linux" width="620">
+    
+    </a>
+
+    
+        <p class="image-caption">Python3 on RISC-V + Linux</p>
+    
+</div>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="https://embeddedinn.xyz/tags/#linux" class="page__taxonomy-item" rel="tag">Linux</a><span class="sep">, </span>
+    
+      
+      
+      <a href="https://embeddedinn.xyz/tags/#python" class="page__taxonomy-item" rel="tag">python</a><span class="sep">, </span>
+    
+      
+      
+      <a href="https://embeddedinn.xyz/tags/#qemu" class="page__taxonomy-item" rel="tag">QEMU</a><span class="sep">, </span>
+    
+      
+      
+      <a href="https://embeddedinn.xyz/tags/#risc-v" class="page__taxonomy-item" rel="tag">RISC-V</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="https://embeddedinn.xyz/categories/#articles" class="page__taxonomy-item" rel="tag">Articles</a><span class="sep">, </span>
+    
+      
+      
+      <a href="https://embeddedinn.xyz/categories/#tutorial" class="page__taxonomy-item" rel="tag">Tutorial</a>
+    
+    </span>
+  </p>
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-01-11T15:31:06+00:00">January 11, 2021</time></p>
+
+
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?via=vysakhpillai&amp;text=Linux+%26+Python+on+RISC-V+using+QEMU+from+scratch%20https%3A%2F%2Fwww.embeddedinn.xyz%2Farticles%2Ftutorial%2FLinux-Python-on-RISCV-using-QEMU-from-scratch%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.embeddedinn.xyz%2Farticles%2Ftutorial%2FLinux-Python-on-RISCV-using-QEMU-from-scratch%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fwww.embeddedinn.xyz%2Farticles%2Ftutorial%2FLinux-Python-on-RISCV-using-QEMU-from-scratch%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="https://embeddedinn.xyz/articles/tutorial/a-hands-on-appraoch-to-Measuring-microcontroller-performance-using-Coremark/" class="pagination--pager" title="A hands-on approach to measuring microcontroller performance using Coremark.
+">Previous</a>
+    
+    
+      <a href="https://embeddedinn.xyz/articles/tutorial/Adding-a-custom-peripheral-to-QEMU/" class="pagination--pager" title="Adding a custom peripheral to QEMU RISC-V machine emulation &amp; interacting with it using bare-metal C code
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+      <div class="page__comments">
+  
+  
+      <h4 class="page__comments-title">Leave a comment</h4>
+      <section id="utterances-comments"><div class="utterances" style="height: 269px;">
+    <iframe class="utterances-frame" title="Comments" scrolling="no" src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/utterances.html" loading="lazy"></iframe>
+  </div></section>
+    
+</div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You may also enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image0.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="https://embeddedinn.xyz/articles/tutorial/System_Partitioning_Using_Device_Trees_in_a_Virtualized_System/" rel="permalink">System Hardware Partitioning Using Device Trees in a Virtualized System
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2021-06-09T17:12:06+00:00">June 9, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          8 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">This article looks at how device trees can be leveraged to create silced systems in a virtualized, embedded system.
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image2.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="https://embeddedinn.xyz/articles/tutorial/Building-a-barebones-web-push-server/" rel="permalink">Building a barebones web-push server
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2021-06-07T17:11:06+00:00">June 7, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          4 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">We use push 
+notifications from web-sites on a daily basis. This article is about 
+building one from the ground-up in order to understand how the whole 
+system ...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image0_002.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="https://embeddedinn.xyz/articles/tutorial/exploring_virtualization_in_riscv_machines/" rel="permalink">Exploring virtualization in RISC-V machines
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2021-05-30T18:12:06+00:00">May 30, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          13 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">“RISC-V is 
+classically virtualizable” – We come across this statement very often 
+when we read about the merits of the RISC-V ISA. This article looks at 
+what ...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+      <div class="archive__item-teaser">
+        <img src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/image14.png" alt="">
+      </div>
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="https://embeddedinn.xyz/articles/tutorial/Adding-a-custom-peripheral-to-QEMU/" rel="permalink">Adding a custom peripheral to QEMU RISC-V machine emulation &amp; interacting with it using bare-metal C code
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2021-01-27T18:12:06+00:00">January 27, 2021</time>
+      </span>
+    
+
+    <span class="page__meta-sep"></span>
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+        
+          9 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">QEMU is an 
+excellent platform to emulate hardware platforms. But, we often end up 
+using ready-made platforms without thinking twice about how QEMU 
+emulates t...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term...">
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/vysakhpillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://facebook.com/vysakhpillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-facebook-square" aria-hidden="true"></i> Facebook</a></li>
+        
+      
+        
+          <li><a href="https://github.com/vppillai" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://www.linkedin.com/in/vysakh-pillai/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin-in" aria-hidden="true"></i> Linkedin</a></li>
+        
+      
+        
+          <li><a href="https://www.youtube.com/embeddedinn?sub_confirmation=1" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-youtube" aria-hidden="true"></i> Youtube</a></li>
+        
+      
+    
+
+    <li><a href="https://embeddedinn.xyz/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">© 2021 Vysakh P Pillai. Powered by <a href="https://jekyllrb.com/" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/main.js"></script>
+
+
+
+
+<script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/lunr.js"></script>
+<script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/lunr-store.js"></script>
+<script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/lunr-en.js"></script>
+
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/js.js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-123055877-1', { 'anonymize_ip': false});
+</script>
+
+
+
+
+
+
+    <script>
+  'use strict';
+
+  (function() {
+    var commentContainer = document.querySelector('#utterances-comments');
+
+    if (!commentContainer) {
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.setAttribute('src', 'https://utteranc.es/client.js');
+    script.setAttribute('repo', 'embeddedinn/embeddedinn.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    script.setAttribute('theme', 'github-light');
+    script.setAttribute('crossorigin', 'anonymous');
+
+    commentContainer.appendChild(script);
+  })();
+</script>
+
+  
+
+
+
+  
+    <script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/clipboard.js"></script>
+  
+    <script src="Linux%20&amp;%20Python%20on%20RISC-V%20using%20QEMU%20from%20scratch%20-%20embeddedinn_files/clipboardrouge.js"></script>
+  
+
+
+
+  
+
+</body></html>

@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html id="XF" dir="LTR" data-app="public" data-template="thread_view" data-container-key="node-173" data-content-key="thread-8745" data-logged-in="false" data-cookie-prefix="xf_" data-csrf="1624794597,c87e659e657319df7bb887f7d169c72a" class="has-js template-thread_view has-no-touchevents has-passiveeventlisteners has-no-hiddenscroll has-pointer-nav" lang="en-US"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Linux Kernel: Configuring the Kernel (Part 1) | Linux.org</title>
+<meta name="description" content="Series Index - http://www.linux.org/threads/linux-kernel-reading-guide.5384/
+
+Now that we understand the Linux kernel, we can move on to the main event -...">
+<meta property="og:description" content="Series Index - http://www.linux.org/threads/linux-kernel-reading-guide.5384/
+
+Now that we understand the Linux kernel, we can move on to the main event - configuring and compiling the code. Configuring code for the kernel does take a lot of time. The configuration tool asks many questions and...">
+<meta property="twitter:description" content="Series Index - http://www.linux.org/threads/linux-kernel-reading-guide.5384/
+
+Now that we understand the Linux kernel, we can move on to the main event - configuring and compiling the code...">
+<meta property="og:url" content="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/">
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/tDLqUt1CigNvpUlB1HaZZyDm9ZY.js"></script><script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/5JyAWBbu3U9rhJ6IWDw_QgW8VHI.js"></script><link rel="canonical" href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/">
+<link rel="next" href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2">
+<meta property="og:site_name" content="Linux.org">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Linux Kernel: Configuring the Kernel (Part 1)">
+<meta property="twitter:title" content="The Linux Kernel: Configuring the Kernel (Part 1)">
+<meta name="theme-color" content="#185886">
+<link rel="preload" href="https://www.linux.org/styles/fonts/fa/fa-regular-400.woff2?_v=5.12.1" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://www.linux.org/styles/fonts/fa/fa-solid-900.woff2?_v=5.12.1" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="preload" href="https://www.linux.org/styles/fonts/fa/fa-brands-400.woff2?_v=5.12.1" as="font" type="font/woff2" crossorigin="anonymous">
+<link rel="stylesheet" href="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/css_002.css">
+<link rel="stylesheet" href="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/css.css">
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/preamble.js"></script><link rel="stylesheet" href="data:text/css;charset=utf-8;base64,LyogU2V0IHRoZSBhcHAgYXR0cmlidXRlIHRvIHlvdXIgYXBwJ3MgZGFzaC1kZWxpbWl0ZWQgYWxpYXMuICovCmNsb3VkZmxhcmUtYXBwW2FwcD0iYWJtIl0gewogIGZvbnQtZmFtaWx5OiBBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmOwogIGRpc3BsYXk6IGJsb2NrOwogIHBvc2l0aW9uOiBmaXhlZDsKICBvdmVyZmxvdzogaGlkZGVuOwogIG1hcmdpbjogMDsKICBwYWRkaW5nOiAyJTsKICBoZWlnaHQ6IGF1dG87Cn0KCmNsb3VkZmxhcmUtYXBwW2FwcD0iYWJtIl0gYWJtLXRpdGxlIHsKICBkaXNwbGF5OiBibG9jazsKICBmb250LXNpemU6IDR2bWluOwogIG1hcmdpbi1ib3R0b206IDElOwp9CgpjbG91ZGZsYXJlLWFwcFthcHA9ImFibSJdIGFibS10ZXh0IHsKICBkaXNwbGF5OiBibG9jazsKICBmb250LXNpemU6IDN2bWluOwp9CgpjbG91ZGZsYXJlLWFwcFthcHA9ImFibSJdIGFibS1yZWZyZXNoIHsKICBkaXNwbGF5OiBibG9jazsKICBmb250LXNpemU6IDN2bWluOwogIGN1cnNvcjogcG9pbnRlcjsKICB0ZXh0LWRlY29yYXRpb246IHVuZGVybGluZTsKfQoKY2xvdWRmbGFyZS1hcHBbYXBwPSJhYm0iXSBhYm0tY2xvc2UgewogIGRpc3BsYXk6IGJsb2NrOwogIHBvc2l0aW9uOiBhYnNvbHV0ZTsKICBmb250LXNpemU6IDR2bWluOwogIGN1cnNvcjogcG9pbnRlcjsKICByaWdodDogMSU7CiAgdG9wOiAxJTsKfQoKY2xvdWRmbGFyZS1hcHBbYXBwPSJhYm0tb3ZlcmxheSJdIHsKICBkaXNwbGF5OiBibG9jazsKICBwb3NpdGlvbjogZml4ZWQ7CiAgbGVmdDogMDsKICB0b3A6IDA7CiAgd2lkdGg6IDEwMCU7CiAgaGVpZ2h0OiAxMDAlOwogIGJhY2tncm91bmQ6IHJnYmEoMCwgMCwgMCwgMC4xKTsKfQo=">
+<script async="" src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/js.js"></script>
+<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-3314314-270', {
+			// 
+			
+			
+		});
+	</script>
+<link rel="apple-touch-icon" sizes="180x180" href="https://www.linux.org/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="https://www.linux.org/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://www.linux.org/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="https://www.linux.org/manifest.json">
+<link rel="mask-icon" href="https://www.linux.org/safari-pinned-tab.svg" color="#5bbad5">
+
+</head>
+<body data-template="thread_view">
+<div class="p-pageWrapper" id="top">
+<header class="p-header" id="header">
+<div class="p-header-inner">
+<div class="p-header-content">
+<div class="p-header-logo p-header-logo--image">
+<a href="https://www.linux.org/">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/logo.png" alt="Linux.org">
+</a>
+ </div>
+</div>
+</div>
+</header>
+<div class="p-navSticky p-navSticky--primary" data-xf-init="sticky-header">
+<nav class="p-nav">
+<div class="p-nav-inner">
+<a class="p-nav-menuTrigger" data-xf-click="off-canvas" data-menu=".js-headerOffCanvasMenu" role="button" tabindex="0">
+<i aria-hidden="true"></i>
+<span class="p-nav-menuText">Menu</span>
+</a>
+<div class="p-nav-smallLogo">
+<a href="https://www.linux.org/">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/logo.png" alt="Linux.org">
+</a>
+</div>
+<div class="p-nav-scroller hScroller" data-xf-init="h-scroller" data-auto-scroll=".p-navEl.is-selected">
+<div class="hScroller-scroll is-calculated" style="margin-bottom: -42px;">
+<ul class="p-nav-list js-offCanvasNavSource">
+<li>
+<div class="p-navEl is-selected" data-has-children="true">
+<a href="https://www.linux.org/forums/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="forums">Forums</a>
+<a data-xf-key="1" data-xf-click="menu" data-menu-pos-ref="&lt; .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<a href="https://www.linux.org/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="newPosts">New posts</a>
+<a href="https://www.linux.org/search/?type=post" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="searchForums">Search forums</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="https://www.linux.org/whats-new/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="whatsNew">What's new</a>
+<a data-xf-key="2" data-xf-click="menu" data-menu-pos-ref="&lt; .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<a href="https://www.linux.org/whats-new/posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="whatsNewPosts">New posts</a>
+<a href="https://www.linux.org/whats-new/profile-posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="whatsNewProfilePosts">New profile posts</a>
+<a href="https://www.linux.org/whats-new/latest-activity" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="latestActivity">Latest activity</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="https://www.linux.org/forums/#linux-tutorials.122" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="tutorials">Linux Tutorials</a>
+<a data-xf-key="3" data-xf-click="menu" data-menu-pos-ref="&lt; .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<a href="https://www.linux.org/forums/linux-beginner-tutorials.123/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="beginnertut">Beginner Tutorials</a>
+<a href="https://www.linux.org/forums/linux-intermediate-tutorials.124/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="intermedtut">Intermediate Tutorials</a>
+<a href="https://www.linux.org/forums/linux-advanced-tutorials.125/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="advancedtut">Advanced Tutorials</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="https://www.linux.org/members/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="members">Members</a>
+<a data-xf-key="4" data-xf-click="menu" data-menu-pos-ref="&lt; .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<a href="https://www.linux.org/online/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="currentVisitors">Current visitors</a>
+<a href="https://www.linux.org/whats-new/profile-posts/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " rel="nofollow" data-nav-id="newProfilePosts">New profile posts</a>
+<a href="https://www.linux.org/search/?type=profile_post" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="searchProfilePosts">Search profile posts</a>
+</div>
+</div>
+</div>
+</li>
+<li>
+<div class="p-navEl ">
+<a href="https://www.linux.org/pages/download/" class="p-navEl-link " data-xf-key="5" data-nav-id="downloadlinux">Download Linux</a>
+</div>
+</li>
+<li>
+<div class="p-navEl ">
+<a href="https://www.linux.org/sendy/subscription?f=763B2NU7632Mll892jMQ43m41Rf5qWk4XbLQJF763DVTPuSabLVQnHGdlcbReJHkvt67ZJnC" class="p-navEl-link " data-xf-key="6" data-nav-id="newsletter">Newsletter</a>
+</div>
+</li>
+<li>
+<div class="p-navEl " data-has-children="true">
+<a href="https://www.linux.org/dbtech-credits/" class="p-navEl-link p-navEl-link--splitMenu " data-nav-id="dbtechCredits">Credits</a>
+<a data-xf-key="7" data-xf-click="menu" data-menu-pos-ref="&lt; .p-navEl" class="p-navEl-splitTrigger" role="button" tabindex="0" aria-label="Toggle expanded" aria-expanded="false" aria-haspopup="true"></a>
+<div class="menu menu--structural" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<a href="https://www.linux.org/dbtech-credits/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy " data-nav-id="dbtechCreditsTransactions">Transactions</a>
+<a href="https://www.linux.org/dbtech-credits/currency/credits.1/" class="menu-linkRow u-indentDepth0 js-offCanvasCopy menu-footer" rel="nofollow" data-xf-click="overlay" data-nav-id="dbtechCreditsCurrency1">Credits: 0</a>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div><i class="hScroller-action hScroller-action--end" aria-hidden="true"></i><i class="hScroller-action hScroller-action--start" aria-hidden="true"></i>
+</div>
+<div class="p-nav-opposite">
+<div class="p-navgroup p-account p-navgroup--guest">
+<a href="https://www.linux.org/login/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--logIn" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Log in</span>
+</a>
+<a href="https://www.linux.org/register/" class="p-navgroup-link p-navgroup-link--textual p-navgroup-link--register" data-xf-click="overlay" data-follow-redirects="on">
+<span class="p-navgroup-linkText">Register</span>
+</a>
+</div>
+<div class="p-navgroup p-discovery">
+<a href="https://www.linux.org/whats-new/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--whatsnew" aria-label="What's new" title="What's new">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">What's new</span>
+</a>
+<a href="https://www.linux.org/search/" class="p-navgroup-link p-navgroup-link--iconic p-navgroup-link--search" data-xf-click="menu" data-xf-key="/" aria-label="Search" aria-expanded="false" aria-haspopup="true" title="Search">
+<i aria-hidden="true"></i>
+<span class="p-navgroup-linkText">Search</span>
+</a>
+<div class="menu menu--structural menu--wide" data-menu="menu" aria-hidden="true">
+<form action="/search/search" method="post" class="menu-content" data-xf-init="quick-search">
+<h3 class="menu-header">Search</h3>
+
+<div class="menu-row">
+<div class="inputGroup inputGroup--joined">
+<input type="text" class="input" name="keywords" placeholder="Search…" aria-label="Search" data-menu-autofocus="true">
+<select name="constraints" class="js-quickSearch-constraint input" aria-label="Search within" style="width: 110px; flex-grow: 0; flex-shrink: 0;">
+<option value="" selected="selected">Everywhere</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;}">Threads</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;nodes&quot;:[173],&quot;child_nodes&quot;:1}}">This forum</option>
+<option value="{&quot;search_type&quot;:&quot;post&quot;,&quot;c&quot;:{&quot;thread&quot;:8745}}">This thread</option>
+</select>
+</div>
+</div>
+<div class="menu-row">
+<label class="iconic"><input type="checkbox" name="c[title_only]" value="1"><i aria-hidden="true"></i><span class="iconic-label">Search titles only</span></label>
+</div>
+<div class="menu-row">
+<div class="inputGroup">
+<span class="inputGroup-text" id="ctrl_search_menu_by_member">By:</span>
+<input type="text" class="input" name="c[users]" data-xf-init="auto-complete" placeholder="Member" aria-labelledby="ctrl_search_menu_by_member" autocomplete="off">
+</div>
+</div>
+<div class="menu-footer">
+<span class="menu-footer-controls">
+<button type="submit" class="button--primary button button--icon button--icon--search"><span class="button-text">Search</span></button>
+<a href="https://www.linux.org/search/" class="button"><span class="button-text">Advanced search…</span></a>
+</span>
+</div>
+<input type="hidden" name="_xfToken" value="1624794597,c87e659e657319df7bb887f7d169c72a">
+</form>
+</div>
+</div>
+</div>
+</div>
+</nav>
+</div>
+<div class="p-sectionLinks">
+<div class="p-sectionLinks-inner hScroller" data-xf-init="h-scroller">
+<div class="hScroller-scroll is-calculated" style="margin-bottom: -42px;">
+<ul class="p-sectionLinks-list">
+<li>
+<div class="p-navEl ">
+<a href="https://www.linux.org/whats-new/posts/" class="p-navEl-link " data-xf-key="alt+1" data-nav-id="newPosts">New posts</a>
+</div>
+</li>
+<li>
+<div class="p-navEl ">
+<a href="https://www.linux.org/search/?type=post" class="p-navEl-link " data-xf-key="alt+2" data-nav-id="searchForums">Search forums</a>
+</div>
+</li>
+</ul>
+</div><i class="hScroller-action hScroller-action--end" aria-hidden="true"></i><i class="hScroller-action hScroller-action--start" aria-hidden="true"></i>
+</div>
+</div>
+<div class="offCanvasMenu offCanvasMenu--nav js-headerOffCanvasMenu" data-menu="menu" aria-hidden="true" data-ocm-builder="navigation">
+<div class="offCanvasMenu-backdrop" data-menu-close="true"></div>
+<div class="offCanvasMenu-content">
+<div class="offCanvasMenu-header">
+Menu
+<a class="offCanvasMenu-closer" data-menu-close="true" role="button" tabindex="0" aria-label="Close"></a>
+</div>
+<div class="p-offCanvasRegisterLink">
+<div class="offCanvasMenu-linkHolder">
+<a href="https://www.linux.org/login/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Log in
+</a>
+</div>
+<hr class="offCanvasMenu-separator">
+<div class="offCanvasMenu-linkHolder">
+<a href="https://www.linux.org/register/" class="offCanvasMenu-link" data-xf-click="overlay" data-menu-close="true">
+Register
+</a>
+</div>
+<hr class="offCanvasMenu-separator">
+</div>
+<div class="js-offCanvasNavTarget"></div>
+</div>
+</div>
+<div class="p-body">
+<div class="p-body-inner">
+
+<ul class="p-breadcrumbs " itemscope="" itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/" itemprop="item">
+<span itemprop="name">Forums</span>
+</a>
+<meta itemprop="position" content="1">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/#linux-org-articles-and-tutorials.192" itemprop="item">
+<span itemprop="name">Linux.org Articles and Tutorials</span>
+</a>
+<meta itemprop="position" content="2">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/categories/linux-original-content.170/" itemprop="item">
+<span itemprop="name">Linux Original Content</span>
+</a>
+<meta itemprop="position" content="3">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/categories/linux-articles.171/" itemprop="item">
+<span itemprop="name">Linux Articles</span>
+</a>
+<meta itemprop="position" content="4">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/linux-kernel.173/" itemprop="item">
+<span itemprop="name">Linux Kernel</span>
+</a>
+<meta itemprop="position" content="5">
+</li>
+</ul>
+<div align="center">
+<script async="" src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4059641217434021" data-ad-slot="9743574380" data-ad-format="link" data-full-width-responsive="true"></ins>
+<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+</div>
+<noscript><div class="blockMessage blockMessage--important blockMessage--iconic u-noJsOnly">JavaScript is disabled. For a better experience, please enable JavaScript in your browser before proceeding.</div></noscript>
+<!--[if lt IE 9]><div class="blockMessage blockMessage&#45;&#45;important blockMessage&#45;&#45;iconic">You are using an out of date browser. It  may not display this or other websites correctly.<br />You should upgrade or use an <a href="https://www.google.com/chrome/browser/" target="_blank">alternative browser</a>.</div><![endif]-->
+<div class="p-body-header">
+<div class="p-title ">
+<h1 class="p-title-value">The Linux Kernel: Configuring the Kernel (Part 1)</h1>
+</div>
+<div class="p-description">
+<ul class="listInline listInline--bullet">
+<li>
+<i class="fa--xf far fa-user" aria-hidden="true" title="Thread starter"></i>
+<span class="u-srOnly">Thread starter</span>
+<span class="username  u-concealed" dir="auto" data-user-id="0">DevynCJohnson</span>
+</li>
+<li>
+<i class="fa--xf far fa-clock" aria-hidden="true" title="Start date"></i>
+<span class="u-srOnly">Start date</span>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/" class="u-concealed"><time class="u-dt" dir="auto" datetime="2013-07-15T15:02:52+0100" data-time="1373896972" data-date-string="Jul 15, 2013" data-time-string="3:02 PM" title="Jul 15, 2013 at 3:02 PM">Jul 15, 2013</time></a>
+</li>
+</ul>
+</div>
+</div>
+<div class="p-body-main p-body-main--withSidebar ">
+<div class="p-body-content">
+<div class="p-body-pageContent">
+<div class="block block--messages" data-xf-init="" data-type="post" data-href="/inline-mod/">
+<div class="block-outer"><div class="block-outer-main"><nav class="pageNavWrapper pageNavWrapper--mixed ">
+<div class="pageNav  ">
+<ul class="pageNav-main">
+<li class="pageNav-page pageNav-page--current "><a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/">1</a></li>
+<li class="pageNav-page "><a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2">2</a></li>
+</ul>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNav-jump pageNav-jump--next">Next</a>
+</div>
+<div class="pageNavSimple">
+<a class="pageNavSimple-el pageNavSimple-el--current" data-xf-init="tooltip" data-xf-click="menu" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true" data-original-title="Go to page" id="js-XFUniqueId1">
+1 of 2
+</a>
+<div class="menu menu--pageJump" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<h4 class="menu-header">Go to page</h4>
+<div class="menu-row" data-xf-init="page-jump" data-page-url="/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-%page%">
+<div class="inputGroup inputGroup--numbers">
+<div class="inputGroup inputGroup--numbers inputNumber inputGroup--joined" data-xf-init="number-box"><input type="number" pattern="\d*" class="input input--number js-numberBoxTextInput input input--numberNarrow js-pageJumpPage" value="1" min="1" max="2" step="1" required="required" data-menu-autofocus="true"><button type="button" tabindex="-1" class="inputGroup-text inputNumber-button inputNumber-button--up js-up" data-dir="up"></button><button type="button" tabindex="-1" class="inputGroup-text inputNumber-button inputNumber-button--down js-down" data-dir="down"></button></div>
+<span class="inputGroup-text"><button type="button" class="js-pageJumpGo button"><span class="button-text">Go</span></button></span>
+</div>
+</div>
+</div>
+</div>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNavSimple-el pageNavSimple-el--next">
+Next <i aria-hidden="true"></i>
+</a>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNavSimple-el pageNavSimple-el--last" data-xf-init="tooltip" data-original-title="Last" id="js-XFUniqueId2">
+<i aria-hidden="true"></i> <span class="u-srOnly">Last</span>
+</a>
+</div>
+</nav>
+</div></div>
+<div class="block-outer js-threadStatusField"></div>
+<div class="block-container lbContainer" data-xf-init="lightbox select-to-quote" data-message-selector=".js-post" data-lb-id="thread-8745" data-lb-universal="0">
+<div class="block-body js-replyNewMessageContainer">
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24334" id="js-post-24334">
+<span class="u-anchorTarget" id="post-24334"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24334" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-15T15:02:52+0100" data-time="1373896972" data-date-string="Jul 15, 2013" data-time-string="3:02 PM" title="Jul 15, 2013 at 3:02 PM">Jul 15, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24334" data-xf-init="share-tooltip" data-href="/posts/24334/share" rel="nofollow" id="js-XFUniqueId3">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24334" rel="nofollow">
+#1
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24334" data-lb-caption-desc="DevynCJohnson · Jul 15, 2013 at 3:02 PM">
+
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><b>Series Index</b> - <a href="https://www.linux.org/threads/linux-kernel-reading-guide.5384/" class="link link--internal">http://www.linux.org/threads/linux-kernel-reading-guide.5384/</a><br>
+<br>
+<a href="https://www.linux.org/threads/the-linux-kernel-security.4223/" class="link link--internal">Now that we understand the Linux kernel</a>,
+ we can move on to the main event - configuring and compiling the code. 
+Configuring code for the kernel does take a lot of time. The 
+configuration tool asks many questions and allows developers to 
+configure every aspect of the kernel. If unsure about any question or 
+feature, it is best to pick the default value provided by the 
+configuration tool. This tutorial series will walk readers through the 
+whole process of configuring the kernel.<br>
+<br>
+To configure the code, open a terminal in the main source code folder. 
+Once a terminal is up, there are a few ways to configure the code based 
+on the preferred configuration interface.<br>
+<br>
+<b>make config</b> - Plain text interface (most commonly used choice)<br>
+<br>
+<b>make menuconfig</b> - Text-based with colored menus and radiolists. 
+This options allows developers to save their progress. ncurses must be 
+installed (sudo apt-get install libncurses5-dev).<br>
+<br>
+<b>make nconfig</b> - Text-based colored menus - curses (libcdk5-dev) must be installed<br>
+<br>
+<b>make xconfig</b> - QT/X-windows interface – QT is required<br>
+<br>
+<b>make gconfig</b> - Gtk/X-windows interface – GTK is required<br>
+<br>
+<b>make oldconfig</b> - Plain-text interface that updates a config file 
+(that may have been copied from another system) to be compatible with 
+the newer kernel source code.<br>
+<br>
+<b>make silentoldconfig</b> - This is the same as oldconfig except the questions answered by the config file will not be shown<br>
+<br>
+<b>make olddefconfig</b> - This is like silentoldconfig except some questions are answered by their defaults<br>
+<br>
+<b>make defconfig</b> - This option creates a config file that uses default settings based on the current system's architecture.<br>
+<br>
+<b>make ${PLATFORM}_defconfig</b> - Creates a config file using values from arch/$ARCH/configs/${PLATFORM}_defconfig.<br>
+<br>
+<b>make allyesconfig</b> - This option creates a config file that will answer yes to as many questions as possible.<br>
+<br>
+<b>make allmodconfig</b> - This option creates a config file that will make as many parts of the kernel a module as possible<br>
+<br>
+NOTE: Code in the Linux kernel can be put in the kernel itself or made 
+as a module. For instance, users can add Bluetooth drivers as a module 
+(separate from the kernel), add to the kernel itself, or not add at all.
+ When code is added to the kernel itself, the kernel requires more RAM 
+space and boot-up time may take longer. However, the kernel will perform
+ better. If code is added as modules, the code will remain on the 
+hard-drive until the code is needed. Then, the module is loaded to RAM. 
+This will reduce the kernel's RAM usage and decrease boot time. However,
+ the kernel's performance may suffer because the kernel and the modules 
+will be spread throughout the RAM. The other choice is to not add some 
+code. For illustration, a kernel developer may know that a system will 
+never use Bluetooth devices. As a result, the drivers are not added to 
+the kernel. This improves the kernel's performance. However, if users 
+later need Bluetooth devices, they will need to install Bluetooth 
+modules or update the whole kernel.<br>
+<br>
+<b>make allnoconfig</b> - This option creates a config file that will 
+only add essential code to the kernel; this answers no to as many 
+questions as possible. This can sometimes make a kernel that does not 
+work on the hardware it was compiled on.<br>
+<br>
+<b>make randconfig</b> - This option makes random choices for the kernel<br>
+<b>make localmodconfig</b> - This option creates a config file based on the current list of loaded modules and system configuration.<br>
+<br>
+<b>make localyesconfig</b> - This will set all module options to yes - most (or all) of the kernel will not be in modules<br>
+<br>
+TIP: It is best to use “make menuconfig” because users can save their 
+progress. “make config” does not offer this luxury. Because the 
+configuration process takes a lot of time,<br>
+<br>
+<b>Configuration:</b><br>
+<br>
+Most developers choose "make menuconfig" or one of the other graphical 
+menus. After typing the desired command, the first question asks whether
+ the kernel to be built is going to be a 64-bit kernel or not. The 
+choices are "Y", "n", and "?". The question mark explains the question, 
+"n" answers no to the question, and "Y" answers yes to the question. For
+ this tutorial, I will choose yes. To do this I type "Y" (this is 
+case-insensitive) and hit enter.<br>
+<br>
+UPDATED NOTE: At first, I used "make config" as I wrote this series. I 
+later used "make menuconfig" (ncurses). "make config" is linear, that 
+is, each question is asked one after another while the ncurses interface
+ is a branching menu. If you are using any of the configuration 
+interfaces that use menus, start at the top of the first (main) menu and
+ work your way down going into each menu and sub-menu. This will allow 
+you to follow this series easily as you configure your own kernel.<br>
+<br>
+NOTE: If the kernel is compiled on a 32-bit system, then the 
+configuration tool would ask if the kernel should be 32-bit. The first 
+question is different on other processors.<br>
+<br>
+The next line shows "Cross-compiler tool prefix (CROSS_COMPILE) []". If 
+you are not cross-compiling, hit enter. If you are cross-compiling, type
+ something like "arm-unknown-linux-gnu-" for ARM systems or 
+"x86_64-pc-linux-gnu-" for 64-bit PC systems. There are many other 
+possible commands for other processor types, but the list can be quite 
+large. Once a developer knows what processor they want to support, it is
+ easy to research the command needed for that processor.<br>
+<br>
+NOTE: Cross-compiling is compiling code to be used on other processors. 
+For illustration, an Intel system that is cross-compiling code is making
+ applications for processors other than Intel. So, this system may be 
+compiling code for ARM or AMD processors.<br>
+<br>
+NOTE: Each choice will change which questions come up and when they are 
+displayed. I will include my choices so readers can follow the 
+configuration process on their own system.<br>
+<br>
+Next, users will see "Local version - append to kernel release 
+(LOCALVERSION) []". This is where developers can give a special version 
+number or name to their customized kernel. I will type "LinuxDotOrg". 
+The kernel version is now “3.9.4-LinuxDotOrg”. Next, the configuration 
+tool asks "Automatically append version information to the version 
+string (LOCALVERSION_AUTO) [N/y/?]". If a git tree is found, the 
+revision number will be appended. This example is not using git, so I 
+will answer no. Other wise the git revision number will be appended to 
+the version. Remember vmlinuz and similar files? Well, the next question
+ asks which compression format should be used. The developer can choose 
+one through five. The choices are<br>
+<br>
+1. Gzip (KERNEL_GZIP)<br>
+2. Bzip2 (KERNEL_BZIP2)<br>
+3. LZMA (KERNEL_LZMA)<br>
+4. XZ (KERNEL_XZ)<br>
+5. LZO (KERNEL_LZO)<br>
+<br>
+Gzip is the default, so I will press “1” and hit enter. Each compression
+ format has greater or less compression ratios compared to the other 
+formats. A better compression ratio means a smaller file, but more time 
+is needed to uncompress the file while the opposite applies to lower 
+compression ratios.<br>
+<br>
+Now, this line is displayed - “Default hostname (DEFAULT_HOSTNAME) 
+[(none)]”. The default hostname can be configured. Usually, developers 
+leave this blank (I left it blank) so that Linux users can set up their 
+own hostname.<br>
+<br>
+Next, developers can enable or disable the use of swap space. Linux uses
+ a separate partition called “swap space” to use as virtual memory. This
+ is equivalent to Windows' paging file. Typically, developers answer yes
+ for the line “Support for paging of anonymous memory (swap) (SWAP) 
+[Y/n/?]”.<br>
+<br>
+The next line (System V IPC (SYSVIPC) [Y/n/?]) asks if the kernel should
+ support IPC. Inter Process Communication allows processes to 
+communicate and sync. It is best to enable IPC, otherwise, many 
+applications will not work. Answering yes to this question will cause 
+the configuration tool to ask “POSIX Message Queues (POSIX_MQUEUE) 
+[Y/n/?]”. This question will only be seen if IPC is enabled. POSIX 
+message queues is a messaging queue (a form of interprocess 
+communication) where each message is given a priority. The default 
+choice is yes. Hit enter to choose the default choice (indicated by the 
+capitalized choice).<br>
+<br>
+The next question (open by fhandle syscalls (FHANDLE) [Y/n/?]) is asking
+ if programs will be permitted to use file handles instead of filenames 
+when performing filesystem operations if needed. By default, the answer 
+is yes.<br>
+<br>
+Sometimes, when a developer has made certain choices, some questions 
+will automatically be answered. For instance, the next question 
+(Auditing support (AUDIT) [Y/?]) is answered yes without prompting 
+because previous choices require this feature. Auditing-support logs the
+ accesses and modifications of all files. The next question relates to 
+auditing (Enable system-call auditing support (AUDITSYSCALL) [Y/n/?]). 
+If enabled, all system calls are logged. If the developer wants 
+performance, then as much auditing features as possible should be 
+disabled and not added to the kernel. Some developers may enable 
+auditing for security monitoring. I will select “no” for this question. 
+The next audit question (Make audit loginuid immutable 
+(AUDIT_LOGINUID_IMMUTABLE) [N/y/?]) is asking if processes can change 
+their loginuid (LOGIN User ID). If enabled, processes in userspace will 
+not be able to change their own loginuids. For better performance, we 
+will disable this feature.<br>
+<br>
+NOTE: When configuring via “make config”, the questions that are 
+answered by the configuration tool are displayed, but the user does not 
+have a way to change the answer. When configuring via “make menuconfig”,
+ the user cannot change the option no matter what button is pressed. 
+Developers should not want to change options like that anyway because a 
+previous choice requires another question to be answered a certain way.<br>
+<br>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-2.4318/" class="link link--internal">In the next article, we can configure the IRQ subsystem and all of the following choices.</a></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+<section class="message-attachments">
+<h4 class="block-textHeader">Attachments</h4>
+<ul class="attachmentList">
+<li class="attachment">
+<div class="attachment-icon attachment-icon--img">
+<a href="https://www.linux.org/attachments/slide-jpg.826/" target="_blank" class="js-lbImage">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/826-3ef336da46d78e56cfa495eee8b447b6.jpg" alt="slide.JPG">
+</a>
+</div>
+<div class="attachment-name">
+<a href="https://www.linux.org/attachments/slide-jpg.826/" target="_blank" title="slide.JPG">slide.JPG</a>
+</div>
+<div class="attachment-details">
+<span class="attachment-details-size">177.1 KB</span>
+<span class="attachment-details-views">Views: 107,739</span>
+</div>
+</li>
+</ul>
+</section>
+</div>
+<div class="message-lastEdit">
+Last edited: <time class="u-dt" dir="auto" datetime="2014-09-21T15:21:00+0100" data-time="1411309260" data-date-string="Sep 21, 2014" data-time-string="3:21 PM" title="Sep 21, 2014 at 3:21 PM">Sep 21, 2014</time>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24334/reactions" data-xf-click="overlay" data-cache="false">6 people</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<br>
+<div align="center">
+<script async="" src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4059641217434021" data-ad-slot="9743574380" data-ad-format="link" data-full-width-responsive="true"></ins>
+<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+</div>
+<br>
+<article class="message message--post js-post js-inlineModContainer  " data-author="ilAli" data-content="post-24335" id="js-post-24335">
+<span class="u-anchorTarget" id="post-24335"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #5c5cd6; color: #ebebfa">
+<span class="avatar-u0-m">I</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">ilAli</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24335" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-18T03:00:35+0100" data-time="1374112835" data-date-string="Jul 18, 2013" data-time-string="3:00 AM" title="Jul 18, 2013 at 3:00 AM">Jul 18, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24335" data-xf-init="share-tooltip" data-href="/posts/24335/share" rel="nofollow" id="js-XFUniqueId4">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24335" rel="nofollow">
+#2
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24335" data-lb-caption-desc="ilAli · Jul 18, 2013 at 3:00 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">this guide is fantastic. please explain how to 
+save config file in the middle of its process to be able continue rest 
+of it in future.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24335/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24336" id="js-post-24336">
+<span class="u-anchorTarget" id="post-24336"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24336" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-18T12:55:37+0100" data-time="1374148537" data-date-string="Jul 18, 2013" data-time-string="12:55 PM" title="Jul 18, 2013 at 12:55 PM">Jul 18, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24336" data-xf-init="share-tooltip" data-href="/posts/24336/share" rel="nofollow" id="js-XFUniqueId5">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24336" rel="nofollow">
+#3
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24336" data-lb-caption-desc="DevynCJohnson · Jul 18, 2013 at 12:55 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Not all interfaces allow you to save the 
+progress. Near the top of the article, you will see different make 
+commands. "make menuconfig" is one that allows you to save your 
+progress. The standard "make config" cannot save its progress.<br>
+<br>
+Thank you for your interest in my article. I have written a whole series
+ on the Linux kernel. Look for articles whose name begins with "The 
+Linux Kernel: ". I am currently writing about the configuration process.
+ This series is going to get more detailed. This series is far from 
+over. There is a lot to configure in the Linux kernel.<br>
+<br>
+If you have any suggestions for other topics, email me at <a href="mailto:DevynCJohnson@Gmail.com">DevynCJohnson@Gmail.com</a>, find me on Google+, contact me via Launchpad, or contact me through Linux.org.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+ <li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24336/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="ryanvade" data-content="post-24337" id="js-post-24337">
+<span class="u-anchorTarget" id="post-24337"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #336666; color: #88c3c3">
+<span class="avatar-u0-m">R</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">ryanvade</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24337" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-18T18:59:56+0100" data-time="1374170396" data-date-string="Jul 18, 2013" data-time-string="6:59 PM" title="Jul 18, 2013 at 6:59 PM">Jul 18, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24337" data-xf-init="share-tooltip" data-href="/posts/24337/share" rel="nofollow" id="js-XFUniqueId6">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24337" rel="nofollow">
+#4
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24337" data-lb-caption-desc="ryanvade · Jul 18, 2013 at 6:59 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Configuring the kernel is the best part of Linux. Every time a new kernel comes out I have something to mess around with. <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="smilie smilie--sprite smilie--sprite1" alt=":)" title="Smile    :)" data-shortname=":)"></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24337/reactions" data-xf-click="overlay" data-cache="false"><bdi>Zer0F@ckZ</bdi>, <bdi>(deleted member)</bdi> and <bdi>(deleted member)</bdi></a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="CubeGod" data-content="post-24338" id="js-post-24338">
+<span class="u-anchorTarget" id="post-24338"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #cc9999; color: #773c3c">
+<span class="avatar-u0-m">C</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">CubeGod</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24338" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-21T21:12:48+0100" data-time="1374437568" data-date-string="Jul 21, 2013" data-time-string="9:12 PM" title="Jul 21, 2013 at 9:12 PM">Jul 21, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24338" data-xf-init="share-tooltip" data-href="/posts/24338/share" rel="nofollow" id="js-XFUniqueId7">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24338" rel="nofollow">
+#5
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24338" data-lb-caption-desc="CubeGod · Jul 21, 2013 at 9:12 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Well, I'll be sure to read this through more 
+thoroughly later, there's bound to be options not even I understand 
+(although I am currently developing my own distro, the second one in my 
+list (first was based on opensuse with a kernel upgrade and some 
+specific configuration, the second one, still being built is made from 
+scratch) and I already configured many kernels some options I've never 
+touched because I never quite understood them)<br>
+<br>
+Can't wait for part 2, never really researched the IRQ options ^^;</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24339" id="js-post-24339">
+<span class="u-anchorTarget" id="post-24339"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24339" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-22T11:41:04+0100" data-time="1374489664" data-date-string="Jul 22, 2013" data-time-string="11:41 AM" title="Jul 22, 2013 at 11:41 AM">Jul 22, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24339" data-xf-init="share-tooltip" data-href="/posts/24339/share" rel="nofollow" id="js-XFUniqueId8">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24339" rel="nofollow">
+#6
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24339" data-lb-caption-desc="DevynCJohnson · Jul 22, 2013 at 11:41 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">I will be getting in great depth, so watch the 
+main page for the site for the next ones. I expect to have more than 
+eight of these tutorials. I plan to be a thorough as possible. Keep 
+reading and liking the series. If any questions arise, feel free to ask 
+and I will clarify.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24339/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="CubeGod" data-content="post-24340" id="js-post-24340">
+<span class="u-anchorTarget" id="post-24340"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #cc9999; color: #773c3c">
+<span class="avatar-u0-m">C</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">CubeGod</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24340" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-07-22T17:46:19+0100" data-time="1374511579" data-date-string="Jul 22, 2013" data-time-string="5:46 PM" title="Jul 22, 2013 at 5:46 PM">Jul 22, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24340" data-xf-init="share-tooltip" data-href="/posts/24340/share" rel="nofollow" id="js-XFUniqueId9">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24340" rel="nofollow">
+#7
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24340" data-lb-caption-desc="CubeGod · Jul 22, 2013 at 5:46 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24339" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24339">DevynCJohnson said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+I will be getting in great depth, so watch the main page for the site 
+for the next ones. I expect to have more than eight of these tutorials. I
+ plan to be a thorough as possible. Keep reading and liking the series. 
+If any questions arise, feel free to ask and I will clarify.
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>Well, truth is that the options I don't get I never 
+bothered looking up (mostly due to lack of time) and the ones I get I 
+mostly figured out using common sense and the comments on each entry in 
+menuconfig.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList ">
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="VP9KS" data-content="post-24341" id="js-post-24341">
+<span class="u-anchorTarget" id="post-24341"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #996666; color: #e0d1d1">
+<span class="avatar-u0-m">V</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">VP9KS</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24341" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-09-25T00:14:39+0100" data-time="1380064479" data-date-string="Sep 25, 2013" data-time-string="12:14 AM" title="Sep 25, 2013 at 12:14 AM">Sep 25, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24341" data-xf-init="share-tooltip" data-href="/posts/24341/share" rel="nofollow" id="js-XFUniqueId10">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24341" rel="nofollow">
+#8
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24341" data-lb-caption-desc="VP9KS · Sep 25, 2013 at 12:14 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Devyn,<br>
+Thanks for the series, I will be sure to check them all out as time permits.<br>
+Paul</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24341/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24342" id="js-post-24342">
+<span class="u-anchorTarget" id="post-24342"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+ <a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24342" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-09-25T01:36:31+0100" data-time="1380069391" data-date-string="Sep 25, 2013" data-time-string="1:36 AM" title="Sep 25, 2013 at 1:36 AM">Sep 25, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24342" data-xf-init="share-tooltip" data-href="/posts/24342/share" rel="nofollow" id="js-XFUniqueId11">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24342" rel="nofollow">
+#9
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24342" data-lb-caption-desc="DevynCJohnson · Sep 25, 2013 at 1:36 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24341" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24341">VP9KS said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Devyn,<br>
+Thanks for the series, I will be sure to check them all out as time permits.<br>
+Paul
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>Thanks for the compliments!</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24342/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="supergeek1000" data-content="post-24343" id="js-post-24343">
+<span class="u-anchorTarget" id="post-24343"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #336699; color: #9fbfdf">
+<span class="avatar-u0-m">S</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">supergeek1000</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24343" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-05T22:10:32+0100" data-time="1381007432" data-date-string="Oct 5, 2013" data-time-string="10:10 PM" title="Oct 5, 2013 at 10:10 PM">Oct 5, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24343" data-xf-init="share-tooltip" data-href="/posts/24343/share" rel="nofollow" id="js-XFUniqueId12">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24343" rel="nofollow">
+#10
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24343" data-lb-caption-desc="supergeek1000 · Oct 5, 2013 at 10:10 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">I sure wish these resources were available back 
+in the nineties. Linux was way more dificult then. Thank you for your 
+fine work, I will be reading all in the coming days.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24343/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24344" id="js-post-24344">
+<span class="u-anchorTarget" id="post-24344"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24344" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-05T22:20:26+0100" data-time="1381008026" data-date-string="Oct 5, 2013" data-time-string="10:20 PM" title="Oct 5, 2013 at 10:20 PM">Oct 5, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24344" data-xf-init="share-tooltip" data-href="/posts/24344/share" rel="nofollow" id="js-XFUniqueId13">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24344" rel="nofollow">
+#11
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24344" data-lb-caption-desc="DevynCJohnson · Oct 5, 2013 at 10:20 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24343" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24343">supergeek1000 said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+I sure wish these resources were available back in the nineties. Linux 
+was way more dificult then. Thank you for your fine work, I will be 
+reading all in the coming days.
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>Thanks for your compliments! Readers like you give me 
+motivation to write more cool articles that you like to read. I release 
+about one Linux kernel article a week. I also post one "random Linux 
+topic" article per week. If you have any ideas for topics, feel free to 
+let me know.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24344/reactions" data-xf-click="overlay" data-cache="false">2 people</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="flunwyc" data-content="post-24345" id="js-post-24345">
+<span class="u-anchorTarget" id="post-24345"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #33cc70; color: #0f3d22">
+<span class="avatar-u0-m">F</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">flunwyc</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24345" class="u-concealed" rel="nofollow">
+ <time class="u-dt" dir="auto" datetime="2013-10-05T22:38:54+0100" data-time="1381009134" data-date-string="Oct 5, 2013" data-time-string="10:38 PM" title="Oct 5, 2013 at 10:38 PM">Oct 5, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24345" data-xf-init="share-tooltip" data-href="/posts/24345/share" rel="nofollow" id="js-XFUniqueId14">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24345" rel="nofollow">
+#12
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24345" data-lb-caption-desc="flunwyc · Oct 5, 2013 at 10:38 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24334" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24334">DevynCJohnson said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+make localyesconfig - This will set all module options to yes - most of the kernel will be in modules
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>It actually does the opposite - it turns all LKMs to built in (it turns all incidences of 'm' to 'y' in kernel config).</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24345/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24346" id="js-post-24346">
+<span class="u-anchorTarget" id="post-24346"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24346" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-06T00:52:00+0100" data-time="1381017120" data-date-string="Oct 6, 2013" data-time-string="12:52 AM" title="Oct 6, 2013 at 12:52 AM">Oct 6, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24346" data-xf-init="share-tooltip" data-href="/posts/24346/share" rel="nofollow" id="js-XFUniqueId15">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24346" rel="nofollow">
+#13
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24346" data-lb-caption-desc="DevynCJohnson · Oct 6, 2013 at 12:52 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24345" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24345">flunwyc said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+It actually does the opposite - it turns all LKMs to built in (it turns all incidences of 'm' to 'y' in kernel config).
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>Thanks! I see that I do contradict myself by saying all 
+modules will be set to "yes" and then in the same sentence say "most of 
+the kernel will be in modules".</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24346/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="Ivaylo Krumov" data-content="post-24348" id="js-post-24348">
+<span class="u-anchorTarget" id="post-24348"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #85e0e0; color: #248f8f">
+<span class="avatar-u0-m">I</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">Ivaylo Krumov</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+ <header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24348" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-29T18:26:49+0000" data-time="1383071209" data-date-string="Oct 29, 2013" data-time-string="6:26 PM" title="Oct 29, 2013 at 6:26 PM">Oct 29, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24348" data-xf-init="share-tooltip" data-href="/posts/24348/share" rel="nofollow" id="js-XFUniqueId16">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24348" rel="nofollow">
+#14
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24348" data-lb-caption-desc="Ivaylo Krumov · Oct 29, 2013 at 6:26 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Absolutely outstanding article from a technical 
+standpoint and from a standpoint of the content it is talking about. 
+This is what I call an article that is worthy to be categorized as THE 
+DOCUMENTATION BIBLE!!!<br>
+Thank You Sir.<br>
+Keep doing what you are doing and always look for a way to make it better and more efficient !!!!</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24348/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24349" id="js-post-24349">
+<span class="u-anchorTarget" id="post-24349"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24349" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-29T23:15:58+0000" data-time="1383088558" data-date-string="Oct 29, 2013" data-time-string="11:15 PM" title="Oct 29, 2013 at 11:15 PM">Oct 29, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24349" data-xf-init="share-tooltip" data-href="/posts/24349/share" rel="nofollow" id="js-XFUniqueId17">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24349" rel="nofollow">
+#15
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24349" data-lb-caption-desc="DevynCJohnson · Oct 29, 2013 at 11:15 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24348" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24348">Ivaylo Krumov said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Absolutely outstanding article from a technical standpoint and from a 
+standpoint of the content it is talking about. This is what I call an 
+article that is worthy to be categorized as THE DOCUMENTATION BIBLE!!!<br>
+Thank You Sir.<br>
+Keep doing what you are doing and always look for a way to make it better and more efficient !!!!
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>Thank you for the compliments! I love posters like you.<br>
+<br>
+Feel free to give me any ideas on future topics for this series or other
+ articles or topics in general. All three of the main authors on this 
+site (me, Jarret Buse, and Eric Hansen) are open to ideas and 
+suggestions. Enjoy the site!<br>
+<br>
+I am thinking about starting a second article series on Python3 scripting. What do you think about that?</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24349/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="Ivaylo Krumov" data-content="post-24350" id="js-post-24350">
+<span class="u-anchorTarget" id="post-24350"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #85e0e0; color: #248f8f">
+<span class="avatar-u0-m">I</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">Ivaylo Krumov</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24350" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-30T08:41:39+0000" data-time="1383122499" data-date-string="Oct 30, 2013" data-time-string="8:41 AM" title="Oct 30, 2013 at 8:41 AM">Oct 30, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24350" data-xf-init="share-tooltip" data-href="/posts/24350/share" rel="nofollow" id="js-XFUniqueId18">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24350" rel="nofollow">
+#16
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24350" data-lb-caption-desc="Ivaylo Krumov · Oct 30, 2013 at 8:41 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Thank you Sir,<br>
+As I said before, what you are doing, the way you are doing it is Great.
+ Maybe one very small recommendation for an improvement of your articles
+ would be to include some screenshots of the key steps during the course
+ of the action you are doing. As you know , a single picture is bringing
+ as much information as 100 words.<br>
+I don't know what your interests are therefore my ideas might not be 
+necessary the ideas of you guys and the ideology of the web site.<br>
+I would be interesting to see articles related to architectural, design 
+and implementation of SOA technologies with all the SOA related layers, 
+databases, IPv6 etc. Python and Ruby would be interesting as well. There
+ are some other ideas I have in my mind which could be interesting.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24350/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24351" id="js-post-24351">
+<span class="u-anchorTarget" id="post-24351"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24351" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-10-30T19:58:03+0000" data-time="1383163083" data-date-string="Oct 30, 2013" data-time-string="7:58 PM" title="Oct 30, 2013 at 7:58 PM">Oct 30, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24351" data-xf-init="share-tooltip" data-href="/posts/24351/share" rel="nofollow" id="js-XFUniqueId19">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24351" rel="nofollow">
+#17
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24351" data-lb-caption-desc="DevynCJohnson · Oct 30, 2013 at 7:58 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote is-expandable">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24350" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24350">Ivaylo Krumov said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Thank you Sir,<br>
+As I said before, what you are doing, the way you are doing it is Great.
+ Maybe one very small recommendation for an improvement of your articles
+ would be to include some screenshots of the key steps during the course
+ of the action you are doing. As you know , a single picture is bringing
+ as much information as 100 words.<br>
+I don't know what your interests are therefore my ideas might not be 
+necessary the ideas of you guys and the ideology of the web site.<br>
+I would be interesting to see articles related to architectural, design 
+and implementation of SOA technologies with all the SOA related layers, 
+databases, IPv6 etc. Python and Ruby would be interesting as well. There
+ are some other ideas I have in my mind which could be interesting.
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote><br>
+Thanks for the suggestions. I will do what I can. I will include more screenshots in my future articles. Thanks!<br>
+<br>
+I am currently working on a Python3 tutorial (I will release it in a 
+week or two). If I see that enough people enjoyed it, then I will write a
+ whole tutorial series.<br>
+<br>
+Last I knew, one of the authors plan to write an article on IPv6. I do not know when he will write and release it.<br>
+<br>
+Later, I will create a thread for people to post article topic requests for the authors.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24351/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="lin.and.phi" data-content="post-24352" id="js-post-24352">
+<span class="u-anchorTarget" id="post-24352"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #995cd6; color: #401a66">
+<span class="avatar-u0-m">L</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">lin.and.phi</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24352" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-12-01T15:06:43+0000" data-time="1385910403" data-date-string="Dec 1, 2013" data-time-string="3:06 PM" title="Dec 1, 2013 at 3:06 PM">Dec 1, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24352" data-xf-init="share-tooltip" data-href="/posts/24352/share" rel="nofollow" id="js-XFUniqueId20">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24352" rel="nofollow">
+#18
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24352" data-lb-caption-desc="lin.and.phi · Dec 1, 2013 at 3:06 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper">Hello,<br>
+<br>
+Maybe you should also explain shortly how ncurses can be installed. For Ubuntu it is:<br>
+sudo apt-get install libncurses5-dev<br>
+The name "libncurses5-dev" is not self-explanatory, so you should mention it I think.<br>
+(or maybe there is a better way after all, I just googled it now)<br>
+<br>
+Other than that, great article <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="smilie smilie--sprite smilie--sprite1" alt=":)" title="Smile    :)" data-shortname=":)"></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24352/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="DevynCJohnson" data-content="post-24353" id="js-post-24353">
+<span class="u-anchorTarget" id="post-24353"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #99cc99; color: #3c773c">
+<span class="avatar-u0-m">D</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">DevynCJohnson</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24353" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2013-12-01T15:49:59+0000" data-time="1385912999" data-date-string="Dec 1, 2013" data-time-string="3:49 PM" title="Dec 1, 2013 at 3:49 PM">Dec 1, 2013</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24353" data-xf-init="share-tooltip" data-href="/posts/24353/share" rel="nofollow" id="js-XFUniqueId21">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24353" rel="nofollow">
+#19
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24353" data-lb-caption-desc="DevynCJohnson · Dec 1, 2013 at 3:49 PM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><blockquote class="bbCodeBlock bbCodeBlock--expandable bbCodeBlock--quote is-expandable">
+<div class="bbCodeBlock-title">
+<a href="https://www.linux.org/goto/post?id=24352" class="bbCodeBlock-sourceJump" data-xf-click="attribution" data-content-selector="#post-24352">lin.and.phi said:</a>
+</div>
+<div class="bbCodeBlock-content">
+<div class="bbCodeBlock-expandContent ">
+Hello,<br>
+<br>
+Maybe you should also explain shortly how ncurses can be installed. For Ubuntu it is:<br>
+sudo apt-get install libncurses5-dev<br>
+The name "libncurses5-dev" is not self-explanatory, so you should mention it I think.<br>
+(or maybe there is a better way after all, I just googled it now)<br>
+<br>
+Other than that, great article <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="smilie smilie--sprite smilie--sprite1" alt=":)" title="Smile    :)" data-shortname=":)">
+</div>
+<div class="bbCodeBlock-expandLink"><a>Click to expand...</a></div>
+</div>
+</blockquote>libncurses5-dev - <br>
+<ul>
+<li data-xf-list-type="ul">lib - LIBrary</li>
+<li data-xf-list-type="ul">ncurses - the terminal-based GUI</li>
+<li data-xf-list-type="ul">5 - version</li>
+<li data-xf-list-type="ul">dev - for developers (contains headers, links, etc.)</li>
+</ul>Thanks for the compliment.</div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24353/reactions" data-xf-click="overlay" data-cache="false">2 people</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+<article class="message message--post js-post js-inlineModContainer  " data-author="Waqar" data-content="post-24355" id="js-post-24355">
+<span class="u-anchorTarget" id="post-24355"></span>
+<div class="message-inner">
+<div class="message-cell message-cell--user">
+<section itemscope="" itemtype="https://schema.org/Person" class="message-user">
+<div class="message-avatar ">
+<div class="message-avatar-wrapper">
+<span class="avatar avatar--m avatar--default avatar--default--dynamic" data-user-id="0" style="background-color: #cc3366; color: #f0c2d1">
+<span class="avatar-u0-m">W</span>
+</span>
+</div>
+</div>
+<div class="message-userDetails">
+<h4 class="message-name"><span class="username " dir="auto" data-user-id="0" itemprop="name">Waqar</span></h4>
+<h5 class="userTitle message-userTitle" dir="auto" itemprop="jobTitle">Guest</h5>
+</div>
+<span class="message-userArrow"></span>
+</section>
+</div>
+<div class="message-cell message-cell--main">
+<div class="message-main js-quickEditTarget">
+<header class="message-attribution message-attribution--split">
+<div class="message-attribution-main">
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24355" class="u-concealed" rel="nofollow">
+<time class="u-dt" dir="auto" datetime="2014-03-18T10:05:39+0000" data-time="1395137139" data-date-string="Mar 18, 2014" data-time-string="10:05 AM" title="Mar 18, 2014 at 10:05 AM">Mar 18, 2014</time>
+</a>
+</div>
+<ul class="message-attribution-opposite message-attribution-opposite--list">
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24355" data-xf-init="share-tooltip" data-href="/posts/24355/share" rel="nofollow" id="js-XFUniqueId22">
+<i class="fa--xf far fa-share-alt" aria-hidden="true"></i>
+</a>
+</li>
+<li>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/post-24355" rel="nofollow">
+#20
+</a>
+</li>
+</ul>
+</header>
+<div class="message-content js-messageContent">
+<div class="message-userContent lbContainer js-lbContainer " data-lb-id="post-24355" data-lb-caption-desc="Waqar · Mar 18, 2014 at 10:05 AM">
+<article class="message-body js-selectToQuote">
+<div class="bbWrapper"><b>make gconfig</b> never works on ubuntu 12.04 LTS whatever I do. Has anyone tried it?<br>
+I have also asked a question <span style="font-size: 15px"><b>Trouble using `make gconfig` in ubuntu linux</b></span> in 'Unix and Linux' on StackExchange website with details of my problem. No working answers so far <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="smilie smilie--sprite smilie--sprite3" alt=":(" title="Frown    :(" data-shortname=":("></div>
+<div class="js-selectToQuoteEnd">&nbsp;</div>
+</article>
+</div>
+</div>
+<footer class="message-footer">
+<div class="reactionsBar js-reactionsList is-active">
+<ul class="reactionSummary">
+<li><span class="reaction reaction--small reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like"></span></li>
+</ul>
+<span class="u-srOnly">Reactions:</span>
+<a class="reactionsBar-link" href="https://www.linux.org/posts/24355/reactions" data-xf-click="overlay" data-cache="false">1 person</a>
+</div>
+<div class="js-historyTarget message-historyTarget toggleTarget" data-href="trigger-href"></div>
+</footer>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+<div class="block-outer block-outer--after">
+<div class="block-outer-main"><nav class="pageNavWrapper pageNavWrapper--mixed ">
+<div class="pageNav  ">
+<ul class="pageNav-main">
+<li class="pageNav-page pageNav-page--current "><a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/">1</a></li>
+<li class="pageNav-page "><a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2">2</a></li>
+</ul>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNav-jump pageNav-jump--next">Next</a>
+</div>
+<div class="pageNavSimple">
+<a class="pageNavSimple-el pageNavSimple-el--current" data-xf-init="tooltip" data-xf-click="menu" role="button" tabindex="0" aria-expanded="false" aria-haspopup="true" data-original-title="Go to page" id="js-XFUniqueId23">
+1 of 2
+</a>
+<div class="menu menu--pageJump" data-menu="menu" aria-hidden="true">
+<div class="menu-content">
+<h4 class="menu-header">Go to page</h4>
+<div class="menu-row" data-xf-init="page-jump" data-page-url="/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-%page%">
+<div class="inputGroup inputGroup--numbers">
+<div class="inputGroup inputGroup--numbers inputNumber inputGroup--joined" data-xf-init="number-box"><input type="number" pattern="\d*" class="input input--number js-numberBoxTextInput input input--numberNarrow js-pageJumpPage" value="1" min="1" max="2" step="1" required="required" data-menu-autofocus="true"><button type="button" tabindex="-1" class="inputGroup-text inputNumber-button inputNumber-button--up js-up" data-dir="up"></button><button type="button" tabindex="-1" class="inputGroup-text inputNumber-button inputNumber-button--down js-down" data-dir="down"></button></div>
+<span class="inputGroup-text"><button type="button" class="js-pageJumpGo button"><span class="button-text">Go</span></button></span>
+</div>
+</div>
+</div>
+</div>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNavSimple-el pageNavSimple-el--next">
+Next <i aria-hidden="true"></i>
+</a>
+<a href="https://www.linux.org/threads/the-linux-kernel-configuring-the-kernel-part-1.8745/page-2" class="pageNavSimple-el pageNavSimple-el--last" data-xf-init="tooltip" data-original-title="Last" id="js-XFUniqueId24">
+<i aria-hidden="true"></i> <span class="u-srOnly">Last</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="block-outer-opposite">
+<a href="https://www.linux.org/login/" class="button--link button" data-xf-click="overlay"><span class="button-text">
+You must log in or register to reply here.
+</span></a>
+</div>
+</div>
+</div>
+<div class="blockMessage blockMessage--none">
+<div class="shareButtons shareButtons--iconic" data-xf-init="share-buttons" data-page-url="" data-page-title="" data-page-desc="">
+<span class="shareButtons-label">Share:</span>
+<div class="shareButtons-buttons">
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--facebook" data-href="https://www.facebook.com/sharer.php?u={url}" id="js-XFUniqueId25">
+<i aria-hidden="true"></i>
+<span>Facebook</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--twitter" data-href="https://twitter.com/intent/tweet?url={url}&amp;text={title}" id="js-XFUniqueId26">
+<i aria-hidden="true"></i>
+<span>Twitter</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--reddit" data-href="https://reddit.com/submit?url={url}&amp;title={title}" id="js-XFUniqueId27">
+<i aria-hidden="true"></i>
+<span>Reddit</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--pinterest" data-href="https://pinterest.com/pin/create/bookmarklet/?url={url}&amp;description={title}" id="js-XFUniqueId28">
+<i aria-hidden="true"></i>
+<span>Pinterest</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--tumblr" data-href="https://www.tumblr.com/widgets/share/tool?canonicalUrl={url}&amp;title={title}" id="js-XFUniqueId29">
+<i aria-hidden="true"></i>
+<span>Tumblr</span>
+</a>
+<a class="shareButtons-button shareButtons-button--brand shareButtons-button--whatsApp" data-href="https://api.whatsapp.com/send?text={title}&nbsp;{url}" id="js-XFUniqueId30">
+<i aria-hidden="true"></i>
+<span>WhatsApp</span>
+</a>
+<a class="shareButtons-button shareButtons-button--email" data-href="mailto:?subject={title}&amp;body={url}" id="js-XFUniqueId31">
+<i aria-hidden="true"></i>
+<span>Email</span>
+</a>
+<a class="shareButtons-button shareButtons-button--link" data-clipboard="{url}" id="js-XFUniqueId32">
+<i aria-hidden="true"></i>
+<span>Link</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-body-sidebar">
+<div align="center">
+<a target="_blank" href="https://m.do.co/c/10b82948a627"><b>$100 Digital Ocean Credit</b></a>
+<br>
+Get a free VM to test out Linux!
+<br><br>
+</div>
+<div class="block" data-widget-section="onlineNow" data-widget-id="6" data-widget-key="forum_overview_members_online" data-widget-definition="members_online">
+<div class="block-container">
+<h3 class="block-minorHeader"><a href="https://www.linux.org/online/">Members online</a></h3>
+<div class="block-body">
+<div class="block-row block-row--minor">
+<ul class="listInline listInline--comma">
+<li><a href="https://www.linux.org/members/condobloke.28901/" class="username " dir="auto" data-user-id="28901" data-xf-init="member-tooltip" id="js-XFUniqueId33">Condobloke</a></li><li><a href="https://www.linux.org/members/f33dm3bits.91839/" class="username " dir="auto" data-user-id="91839" data-xf-init="member-tooltip" id="js-XFUniqueId34">f33dm3bits</a></li>
+</ul>
+</div>
+</div>
+<div class="block-footer">
+<span class="block-footer-counter">Total:&nbsp;434 (members:&nbsp;6, guests:&nbsp;428)</span>
+</div>
+</div>
+</div>
+<div align="center">
+<script async="" src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4059641217434021" data-ad-slot="6079404386" data-ad-format="rectangle"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div><br>
+<div class="block" data-widget-id="9" data-widget-key="forum_overview_new_posts" data-widget-definition="new_posts">
+<div class="block-container">
+<h3 class="block-minorHeader">
+<a href="https://www.linux.org/whats-new/posts/?skip=1" rel="nofollow">Latest posts</a>
+</h3>
+<ul class="block-body">
+<li class="block-row">
+<div class="contentRow">
+<div class="contentRow-figure">
+<a href="https://www.linux.org/members/f33dm3bits.91839/" class="avatar avatar--xxs" data-user-id="91839" data-xf-init="member-tooltip" id="js-XFUniqueId35">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/91839.jpg" alt="f33dm3bits" class="avatar-u91839-s">
+</a>
+</div>
+<div class="contentRow-main contentRow-main--close">
+<a href="https://www.linux.org/threads/arch-nearly-arch-and-more-distant-cousins.35248/post-127040">Arch, nearly Arch and more distant Cousins</a>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<ul class="listInline listInline--bullet">
+<li>Latest: f33dm3bits</li>
+<li><time class="u-dt" dir="auto" datetime="2021-06-27T12:03:24+0100" data-time="1624791804" data-date-string="Jun 27, 2021" data-time-string="12:03 PM" title="Jun 27, 2021 at 12:03 PM">Today at 12:03 PM</time></li>
+</ul>
+</div>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<a href="https://www.linux.org/forums/arch-and-derivatives.161/">Arch and derivatives</a>
+</div>
+</div>
+</div>
+</li>
+<li class="block-row">
+<div class="contentRow">
+<div class="contentRow-figure">
+<a href="https://www.linux.org/members/f33dm3bits.91839/" class="avatar avatar--xxs" data-user-id="91839" data-xf-init="member-tooltip" id="js-XFUniqueId36">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/91839.jpg" alt="f33dm3bits" class="avatar-u91839-s">
+</a>
+</div>
+<div class="contentRow-main contentRow-main--close">
+<a href="https://www.linux.org/threads/learning-linux-mint-20.33627/post-127033">Learning Linux Mint 20</a>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<ul class="listInline listInline--bullet">
+<li>Latest: f33dm3bits</li>
+<li><time class="u-dt" dir="auto" datetime="2021-06-27T10:19:50+0100" data-time="1624785590" data-date-string="Jun 27, 2021" data-time-string="10:19 AM" title="Jun 27, 2021 at 10:19 AM">Today at 10:19 AM</time></li>
+</ul>
+</div>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<a href="https://www.linux.org/forums/mint.160/">Mint</a>
+</div>
+</div>
+</div>
+</li>
+<li class="block-row">
+<div class="contentRow">
+<div class="contentRow-figure">
+<a href="https://www.linux.org/members/captain-sensible.84665/" class="avatar avatar--xxs" data-user-id="84665" data-xf-init="member-tooltip" id="js-XFUniqueId37">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/84665.jpg" alt="captain-sensible" class="avatar-u84665-s">
+</a>
+</div>
+<div class="contentRow-main contentRow-main--close">
+<a href="https://www.linux.org/threads/printer-driver-for-epson-xp-245.35310/post-127031">Printer driver for Epson XP 245</a>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<ul class="listInline listInline--bullet">
+<li>Latest: captain-sensible</li>
+<li><time class="u-dt" dir="auto" datetime="2021-06-27T10:13:59+0100" data-time="1624785239" data-date-string="Jun 27, 2021" data-time-string="10:13 AM" title="Jun 27, 2021 at 10:13 AM">Today at 10:13 AM</time></li>
+</ul>
+</div>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<a href="https://www.linux.org/forums/mint.160/">Mint</a>
+</div>
+</div>
+</div>
+</li>
+<li class="block-row">
+<div class="contentRow">
+<div class="contentRow-figure">
+<a href="https://www.linux.org/members/condobloke.28901/" class="avatar avatar--xxs" data-user-id="28901" data-xf-init="member-tooltip" id="js-XFUniqueId38">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/28901.jpg" alt="Condobloke" class="avatar-u28901-s">
+</a>
+</div>
+<div class="contentRow-main contentRow-main--close">
+<a href="https://www.linux.org/threads/my-noob-installation-questions-plz-dumb-it-down-for-me.35303/post-127028">My noob installation questions - plz dumb-it-down for me</a>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<ul class="listInline listInline--bullet">
+<li>Latest: Condobloke</li>
+<li><time class="u-dt" dir="auto" datetime="2021-06-27T10:05:00+0100" data-time="1624784700" data-date-string="Jun 27, 2021" data-time-string="10:05 AM" title="Jun 27, 2021 at 10:05 AM">Today at 10:05 AM</time></li>
+</ul>
+</div>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<a href="https://www.linux.org/forums/getting-started.148/">Getting Started</a>
+</div>
+</div>
+</div>
+</li>
+<li class="block-row">
+<div class="contentRow">
+<div class="contentRow-figure">
+<a href="https://www.linux.org/members/craigevil.113899/" class="avatar avatar--xxs" data-user-id="113899" data-xf-init="member-tooltip" id="js-XFUniqueId39">
+<img src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/113899.jpg" alt="craigevil" class="avatar-u113899-s">
+</a>
+</div>
+<div class="contentRow-main contentRow-main--close">
+<a href="https://www.linux.org/threads/something-new-in-the-debian-world-and-its-basically-aur-for-debian-users-dur.35304/post-127014">Something new in the Debian world, and it's basically AUR for Debian users - DUR!</a>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<ul class="listInline listInline--bullet">
+<li>Latest: craigevil</li>
+<li><time class="u-dt" dir="auto" datetime="2021-06-27T03:12:16+0100" data-time="1624759936" data-date-string="Jun 27, 2021" data-time-string="3:12 AM" title="Jun 27, 2021 at 3:12 AM">Today at 3:12 AM</time></li>
+</ul>
+</div>
+<div class="contentRow-minor contentRow-minor--hideLinks">
+<a href="https://www.linux.org/forums/debian-and-derivatives.154/">Debian and derivatives</a>
+</div>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div align="center">
+<script async="" src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4059641217434021" data-ad-slot="6079404386" data-ad-format="rectangle"></ins>
+<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+</div>
+</div>
+</div>
+<ul class="p-breadcrumbs p-breadcrumbs--bottom" itemscope="" itemtype="https://schema.org/BreadcrumbList">
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/" itemprop="item">
+<span itemprop="name">Forums</span>
+</a>
+<meta itemprop="position" content="1">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/#linux-org-articles-and-tutorials.192" itemprop="item">
+<span itemprop="name">Linux.org Articles and Tutorials</span>
+</a>
+<meta itemprop="position" content="2">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/categories/linux-original-content.170/" itemprop="item">
+<span itemprop="name">Linux Original Content</span>
+</a>
+<meta itemprop="position" content="3">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/categories/linux-articles.171/" itemprop="item">
+<span itemprop="name">Linux Articles</span>
+</a>
+<meta itemprop="position" content="4">
+</li>
+<li itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem">
+<a href="https://www.linux.org/forums/linux-kernel.173/" itemprop="item">
+<span itemprop="name">Linux Kernel</span>
+</a>
+<meta itemprop="position" content="5">
+</li>
+</ul>
+</div>
+</div>
+<footer class="p-footer" id="footer" style="margin-bottom: 0px;">
+<div class="p-footer-inner">
+<div class="p-footer-row">
+<div class="p-footer-row-main">
+<ul class="p-footer-linkList">
+<li><a href="https://www.linux.org/misc/style" data-xf-click="overlay" data-xf-init="tooltip" rel="nofollow" data-original-title="Style chooser" id="js-XFUniqueId40">
+<i class="fa--xf far fa-paint-brush" aria-hidden="true"></i> Default Style
+</a></li>
+</ul>
+</div>
+<div class="p-footer-row-opposite">
+<ul class="p-footer-linkList">
+<li><a href="https://www.linux.org/misc/contact" data-xf-click="overlay">Contact us</a></li>
+<li><a href="https://www.linux.org/help/terms/">Terms and rules</a></li>
+<li><a href="https://www.linux.org/help/privacy-policy/">Privacy policy</a></li>
+<li><a href="https://www.linux.org/help/">Help</a></li>
+<li><a href="https://www.linux.org/articles/index.rss" target="_blank" class="p-footer-rssLink" title="RSS"><span aria-hidden="true"><i class="fa--xf far fa-rss" aria-hidden="true"></i><span class="u-srOnly">RSS</span></span></a></li>
+</ul>
+</div>
+</div>
+<div class="p-footer-copyright">
+<a href="https://xenforo.com/" class="u-concealed" dir="ltr" target="_blank">Forum software by XenForo<sup>®</sup> <span class="copyright">© 2010-2020 XenForo Ltd.</span></a>
+<div>
+Parts of this site powered by <a class="u-concealed" rel="nofollow noopener" href="https://www.dragonbyte-tech.com/store/categories/xenforo.5/?utm_source=linux.org&amp;utm_campaign=site&amp;utm_medium=footer&amp;utm_content=footer" target="_blank">XenForo add-ons from DragonByte™</a>
+©2011-2021 <a class="u-concealed" rel="nofollow noopener" href="https://www.dragonbyte-tech.com/?utm_source=linux.org&amp;utm_campaign=site&amp;utm_medium=footer&amp;utm_content=footer" target="_blank">DragonByte Technologies Ltd.</a>
+(<a class="u-concealed" rel="nofollow noopener" href="https://www.dragonbyte-tech.com/store/details/?products=339&amp;utm_source=linux.org&amp;utm_campaign=product&amp;utm_medium=footer&amp;utm_content=footer" target="_blank">Details</a>)
+</div>
+</div>
+</div>
+</footer>
+</div> 
+<div class="u-bottomFixer js-bottomFixTarget">
+</div>
+<div class="u-scrollButtons js-scrollButtons" data-trigger-type="up">
+<a href="#top" class="button--scroll button" data-xf-click="scroll-to"><span class="button-text"><i class="fa--xf far fa-arrow-up" aria-hidden="true"></i><span class="u-srOnly">Top</span></span></a>
+</div>
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/jquery-3.js"></script>
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/vendor-compiled.js"></script>
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/core-compiled.js"></script>
+<script src="The%20Linux%20Kernel%20Configuring%20the%20Kernel%20(Part%201)%20|%20Linux.org_files/lightbox-compiled.js"></script>
+<script>
+		jQuery.extend(true, XF.config, {
+			// 
+			userId: 0,
+			enablePush: true,
+			pushAppServerKey: 'BMJ7nIJP9YbOGUFdhjoCvA9oVIFFf+ZnCTCSDPMH3mRKHDwJU4ldTYxt8hVkxAVKyBJWxg3lwKaqYDomT7VqFu4=',
+			url: {
+				fullBase: 'https://www.linux.org/',
+				basePath: '/',
+				css: '/css.php?css=__SENTINEL__&s=1&l=1&d=1617291233',
+				keepAlive: '/login/keep-alive'
+			},
+			cookie: {
+				path: '/',
+				domain: '',
+				prefix: 'xf_',
+				secure: true
+			},
+			csrf: '1624794597,c87e659e657319df7bb887f7d169c72a',
+			js: {"\/js\/xf\/lightbox-compiled.js?_v=bceb0f06":true},
+			css: {"public:attachments.less":true,"public:bb_code.less":true,"public:lightbox.less":true,"public:message.less":true,"public:share_controls.less":true,"public:extra.less":true},
+			time: {
+				now: 1624794597,
+				today: 1624748400,
+				todayDow: 0,
+				tomorrow: 1624834800,
+				yesterday: 1624662000,
+				week: 1624230000
+			},
+			borderSizeFeature: '3px',
+			fontAwesomeWeight: 'r',
+			enableRtnProtect: true,
+			enableFormSubmitSticky: true,
+			uploadMaxFilesize: 20971520,
+			allowedVideoExtensions: ["m4v","mov","mp4","mp4v","mpeg","mpg","ogv","webm"],
+			shortcodeToEmoji: true,
+			visitorCounts: {
+				conversations_unread: '0',
+				alerts_unread: '0',
+				total_unread: '0',
+				title_count: true,
+				icon_indicator: true
+			},
+			jsState: {},
+			publicMetadataLogoUrl: '',
+			publicPushBadgeUrl: 'https://www.linux.org/styles/default/xenforo/bell.png'
+		});
+
+		jQuery.extend(XF.phrases, {
+			// 
+			date_x_at_time_y: "{date} at {time}",
+			day_x_at_time_y:  "{day} at {time}",
+			yesterday_at_x:   "Yesterday at {time}",
+			x_minutes_ago:    "{minutes} minutes ago",
+			one_minute_ago:   "1 minute ago",
+			a_moment_ago:     "A moment ago",
+			today_at_x:       "Today at {time}",
+			in_a_moment:      "In a moment",
+			in_a_minute:      "In a minute",
+			in_x_minutes:     "In {minutes} minutes",
+			later_today_at_x: "Later today at {time}",
+			tomorrow_at_x:    "Tomorrow at {time}",
+
+			day0: "Sunday",
+			day1: "Monday",
+			day2: "Tuesday",
+			day3: "Wednesday",
+			day4: "Thursday",
+			day5: "Friday",
+			day6: "Saturday",
+
+			dayShort0: "Sun",
+			dayShort1: "Mon",
+			dayShort2: "Tue",
+			dayShort3: "Wed",
+			dayShort4: "Thu",
+			dayShort5: "Fri",
+			dayShort6: "Sat",
+
+			month0: "January",
+			month1: "February",
+			month2: "March",
+			month3: "April",
+			month4: "May",
+			month5: "June",
+			month6: "July",
+			month7: "August",
+			month8: "September",
+			month9: "October",
+			month10: "November",
+			month11: "December",
+
+			active_user_changed_reload_page: "The active user has changed. Reload the page for the latest version.",
+			server_did_not_respond_in_time_try_again: "The server did not respond in time. Please try again.",
+			oops_we_ran_into_some_problems: "Oops! We ran into some problems.",
+			oops_we_ran_into_some_problems_more_details_console: "Oops! We ran into some problems. Please try again later. More error details may be in the browser console.",
+			file_too_large_to_upload: "The file is too large to be uploaded.",
+			uploaded_file_is_too_large_for_server_to_process: "The uploaded file is too large for the server to process.",
+			files_being_uploaded_are_you_sure: "Files are still being uploaded. Are you sure you want to submit this form?",
+			attach: "Attach files",
+			rich_text_box: "Rich text box",
+			close: "Close",
+			link_copied_to_clipboard: "Link copied to clipboard.",
+			text_copied_to_clipboard: "Text copied to clipboard.",
+			loading: "Loading…",
+
+			processing: "Processing",
+			'processing...': "Processing…",
+
+			showing_x_of_y_items: "Showing {count} of {total} items",
+			showing_all_items: "Showing all items",
+			no_items_to_display: "No items to display",
+
+			push_enable_notification_title: "Push notifications enabled successfully at Linux.org",
+			push_enable_notification_body: "Thank you for enabling push notifications!"
+		});
+	</script>
+<form style="display:none" hidden="hidden">
+<input type="text" name="_xfClientLoadTime" value="1624794594,1624794597" id="_xfClientLoadTime" title="_xfClientLoadTime" tabindex="-1">
+</form>
+<script type="text/template" id="xfReactTooltipTemplate">
+		<div class="tooltip-content-inner">
+			<div class="reactTooltip">
+				
+					<a href="#" class="reaction reaction--7" data-reaction-id="7"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="tux" title="tux" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--8" data-reaction-id="8"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="redhat" title="redhat" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--9" data-reaction-id="9"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="ubuntu" title="ubuntu" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--10" data-reaction-id="10"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="beer" title="beer" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--11" data-reaction-id="11"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="linux" title="linux" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--12" data-reaction-id="12"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="neo" title="neo" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--13" data-reaction-id="13"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="slackware" title="slackware" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--14" data-reaction-id="14"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="arch" title="arch" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--15" data-reaction-id="15"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="wizard" title="wizard" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--16" data-reaction-id="16"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="homer" title="homer" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--1" data-reaction-id="1"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Like" title="Like" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--2" data-reaction-id="2"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Love" title="Love" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--3" data-reaction-id="3"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Haha" title="Haha" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--4" data-reaction-id="4"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Wow" title="Wow" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--5" data-reaction-id="5"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Sad" title="Sad" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+					<a href="#" class="reaction reaction--6" data-reaction-id="6"><i aria-hidden="true"></i><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="reaction-sprite js-reaction" alt="Angry" title="Angry" data-xf-init="tooltip" data-extra-class="tooltip--basic tooltip--noninteractive" /></a>
+				
+			</div>
+		</div>
+	</script>
+
+
+
+</body></html>
