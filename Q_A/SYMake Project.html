@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head> 
+ 
+<!-- INSERT TITLE --> 
+<title>SYMake Project</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ 
+<!-- CHANGE STYLESHEET LINK  --> 
+<link rel="stylesheet" media="all" href="SYMake%20Project_files/isuP.css"> 
+ 
+<!-- INSERT ADDITIONAL STYLESHEET, IF DESIRED --> 
+ 
+<!-- INSERT INLINE STYLES, IF DESIRED --> 
+<style type="text/css"> 
+.pullout { float: right; width: 200px; border: 1px solid  #000; 
+padding: 5px; margin-left: 10px; line-height: 1.5; 
+font-family: verdana, arial, sans-serif; }
+    .style1
+    {
+        font-size: medium;
+    }
+    .style2
+    {
+        color: #CC0000;
+    }
+    .style3
+    {
+        text-align: justify;
+    }
+    .style4
+    {
+        width: 168px;
+    }
+    .style5
+    {
+        font-size: x-small;
+    }
+    .style6
+    {
+        font-family: "Courier New", Courier, monospace;
+    }
+</style> 
+ 
+<!-- INSERT PAGE CONTENT, KEYWORDS --> 
+<meta name="description" content="Page talks about Makefile, understand, error-detection, bugs, tracing, testing, make, GNU, ant, maven"> 
+<meta name="keywords" content="Makefile, understand, error-detection, bugs, tracing, testing, make, GNU, ant, maven"> 
+</head> 
+ 
+<body> 
+<div id="container"> 
+ 
+<!-- BANNER. DO NOT CHANGE  --> 
+<div id="mastheadni"> 
+ 
+ <div id="nameplate"> 
+ <a href="http://www.iastate.edu/"> 
+ <img src="SYMake%20Project_files/isu200.gif" alt="Iowa State University" width="200" height="15"></a> 
+ </div> 
+ 
+<!--  INSERT CONTACT, PHONE, SEARCH BOX --> 
+  <div id="search"> 
+  <form method="get" action="http://www.google.com/u/iastate"> 
+  <a href="">Contact Us</a> |
+  <label for="search">ISU Search </label><input type="text" name="q" id="isusearch" size="18"> 
+  </form> 
+  </div> 
+ 
+</div> 
+ 
+<!-- INSERT PAGE TITLE. USE OR DELETE OPTIONAL SUBHEAD --> 
+<div id="titlebar"> 
+<h1><span class="style2">Build Code Analysis with Symbolic Evaluation</span><br>
+    <span class="style1">Ahmed Tamrawi, Hoan Anh Nguyen, Hung Viet Nguyen, Tien N. 
+    Nguyen</span></h1>
+</div> 
+ 
+<table id="main" cellspacing="0"> 
+ 
+<tbody><tr> 
+ 
+<!-- INSERT LEFT COLUMN LINKS --> 
+<td id="a2" class="style4" width="190"> 
+<div id="mainlinks"> 
+ 
+ 
+<div class="linkhead"><h3>Contents</h3></div> 
+<ul> 
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/index.html">Introduction</a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/approach.html">Approach Overview</a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/empirical.html">Empirical Evaluation</a></li>
+    <li class="style5"><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/empirical.html#accuracy">- Renaming Accuracy</a></li>
+    <li class="style5"><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/empirical.html#controlled">- Controlled Experiment</a></li>
+    <li class="style5"><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/tasks.html">- Experiment Tasks</a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/demo.html">Video Demo   <img src="SYMake%20Project_files/video.jpg" width="20"></a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/tool.html">SyMake Download <img src="SYMake%20Project_files/download.png" width="20"></a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/SyMake-ICSE12-Demo.pdf" target="_blank">Demo Paper (PDF)<img src="SYMake%20Project_files/new.gif"></a></li>
+    <li><a href="https://home.engineering.iastate.edu/~atamrawi/SYMake/snapshots.html">SyMake Snapshots <img src="SYMake%20Project_files/snapshot.png" width="20"></a></li>
+</ul>
+ 
+</div> 
+ 
+<!-- INSERT COPY --> 
+<!--
+<div class="maintext"> 
+<h3>Optional notess</h3> 
+<p> 
+Space for optional news or links.
+</p> 
+</div> 
+-->
+</td> 
+ 
+ 
+<!-- 2ND COLUMN. INSERT COPY --> 
+ 
+<td id="b2"> 
+<div class="maintext"> 
+ 
+<h3>Introduction</h3>
+<p class="style3"> 
+    Software building is the process that converts and integrates source code, 
+    libraries, and other required data in a software project into standalone 
+    deliverables and executable files. The build process is managed by a build tool, 
+    i.e. a program that coordinates and controls other programs. A build tool needs 
+    to execute the build commands according to the rules specified in build files, 
+    which are written in a build language supported by the tool. Popular build tools 
+    are GNU make, <span class="style6">ant</span>, and
+    <span class="style6">maven</span>.<br>
+    <br>
+    <strong><em>SYMake</em></strong> is an infrastructure and tool for the analysis 
+    of build code in GNU <span class="style6">make</span>. With a specific input 
+    environment, <span class="style6">make </span>first evaluates a Makefile into a dependency graph among concrete 
+    file names and commands. Then, it executes the commands with those files.
+    <br>
+    <br>
+    With such dynamic nature in <span class="style6">make</span>’s evaluation, it is 
+    challenging for developers to understand and maintain over time multiple large, 
+    complex, and dependent Makefiles. In brief, the dependency analysis for the 
+    build rules and the name analysis for the entity names are difficult. Thus, it 
+    is challenging to detect those Make-specific code smells and to automate 
+    refactorings in the static Make code before evaluation phase. Even automatic 
+    renaming in Make code is not straightforward as in product code.<br>
+    <br>
+    We have used <strong><em>SYMake</em></strong> to develop algorithms and a tool 
+    to detect several types of code smells and errors in Makefiles, e.g. loops of 
+    recursive variables, cyclic dependencies, duplicate prerequisites, rule 
+    inclusion. Another SYMake’s application is a renaming tool for Makefile’s 
+    variables/targets whose names might be fragmented and come from multiple 
+    substrings.<br>
+    <br>
+    Existing tools such as MAKAO (<a href="http://sailhome.cs.queensu.ca/~bram/makao/index.html">http://sailhome.cs.queensu.ca/~bram/makao/index.html</a>) 
+    can only work on concrete dependency graph for a Makefile, thus it cannot 
+    support renaming/extracting, and code smell detections for Make code as in 
+    SYMake.</p>
+ 
+ 
+</div></td> 
+</tr> 
+ 
+ 
+</tbody></table> 
+ 
+<!-- INSERT CONTACT INFO: UNIT, PHONE, E-MAIL  --> 
+ 
+<div id="footer"> 
+<div id="copyright"> 
+<img src="SYMake%20Project_files/ISUbecoming.gif" alt="Becoming the Best" width="200" height="31">  
+<p>Copyright 
+© 2011, Ahmed Tamrawi, Iowa State University. All rights reserved.</p> 
+</div> 
+</div> 
+ 
+</div> 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ </body></html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="https://techroose.com/TechRooseBrowserIcon.png">
+
+    <title>Tech Roose</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="Tech%20Roose_files/bootstrap.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="Tech%20Roose_files/main.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="https://techroose.com/index.html">Tech Roose</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="tech" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tech</a>
+            <div class="dropdown-menu" aria-labelledby="tech">
+              <a class="dropdown-item" href="https://techroose.com/tech/riscvWorkshop.html"> RISC-V Workshop </a>
+              <a class="dropdown-item" href="https://techroose.com/tech/episodeGenerator.html"> Episode Generator </a>
+              <a class="dropdown-item" href="https://techroose.com/tech/spikeMulticore.html"> Spike Multicore </a>
+              <a class="dropdown-item" href="https://techroose.com/tech/linuxOnSpike.html"> Linux on Spike </a>
+              <a class="dropdown-item" href="https://techroose.com/tech/eduroamOnKodi.html"> Eduroam on Raspberry Pi with Kodi </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="security" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Security</a>
+            <div class="dropdown-menu" aria-labelledby="security">
+              <a class="dropdown-item" href="https://techroose.com/security/privacy.html"> Privacy </a>
+              <a class="dropdown-item" href="https://techroose.com/trusted-system-design.html"> Trusted System Design </a>
+              <a class="dropdown-item" href="https://techroose.com/security/SurreyTrustedComputing2018.html">Surrey: Trusted Computing </a>
+              <a class="dropdown-item" href="https://techroose.com/security/oakland2020.html"> IEEE SP 2020 </a>
+              <a class="dropdown-item" href="https://techroose.com/security/SecuringHardwareTraining.html"> Securing Hardware Training </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="chess" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Chess</a>
+            <div class="dropdown-menu" aria-labelledby="chess">
+              <a class="dropdown-item" href="https://techroose.com/chess/chess.html"> Chess Resources </a>
+              <a class="dropdown-item" href="https://techroose.com/chess/news.html"> News </a>
+              <a class="dropdown-item" href="https://techroose.com/chess/Candidates2018.html"> Candidates Tournament 2018 </a>
+              <a class="dropdown-item" href="https://techroose.com/chess/lichess68369.html"> Puzzle: lichess 68369 </a>
+              <a class="dropdown-item" href="https://techroose.com/chess/lichess65644.html"> Puzzle: lichess 65644 </a>
+              <a class="dropdown-item" href="https://techroose.com/chess/lichess89607.html"> Puzzle: lichess 89607 </a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://techroose.com/about.html"> About Me </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+
+      <div class="main-content">
+	      <h1> Running Linux on Spike </h1>
+
+<p> This article is about how to get Linux running on the RISC-V 
+simulator. I tried multiple ways of getting this going and it took quite
+ some of my time, so I hope this article will help others get started 
+more quickly. </p>
+
+<h2> Prerequisites </h2>
+<p> Before you get started, I will run through a couple of requirements 
+here. I have tested these commands on the 64-bit version of Ubuntu 
+18.04.3 LTS. Also, after downloading the source code and building all 
+the necessary files, this project takes up approximately 10 GB of space 
+on disk. Another prerequisite is that you are relatively familiar with 
+using a Linux terminal. </p>
+
+<p> The software project that I found works best to boot Linux on Spike 
+was to use the SiFive Freedom-U-SDK. Our first step is to download the 
+build dependencies for our project. This is all described in the 
+README.md file but I will include it here for completeness. </p>
+
+<p><code>apt install build-essential git autoconf libtool gnulib texinfo
+ bison flex libgmp-dev libmpfr-dev libmpc-dev gawk zlib1g-dev libssl-dev
+ device-tree-compiler python</code></p>
+
+<p> Make sure that you don't have a previous version of RISC-V tools in 
+your path and check that your RISCV environment variable is unset by 
+checking that the output of the following command is blank: </p>
+
+<p><code>echo $RISCV</code></p>
+
+<p> The run-time numbers that I give below are an indication and are 
+based on my machine with an Intel i7-4770 CPU and 32 GB of DRAM. </p>
+
+<h2> Building </h2>
+<p> Next, we will download the source files from their github 
+repository. Make sure you are in a folder where you want your source 
+code to live. The following command will make a directory called 
+freedom-u-sdk inside your current directory and put the source files in 
+there: </p>
+
+<p><code>git clone https://github.com/sifive/freedom-u-sdk.git</code></p>
+
+<p> I've found that whether I am able to build this repository or not 
+depends on which commit I am on. So to make sure you are on the same 
+commit number of the repository as I am run the following commands: </p>
+
+<p><code>
+  cd freedom-u-sdk/<br>
+  git checkout ea9879339b937d1d5f90073a3ae37d8c78b141f7
+</code></p>
+
+<p> The main purpose of this repository is to be a collection of other 
+repositories and which versions work well together. For example, you can
+ see a linux folder for the operating system and a riscv-isa-sim folder 
+for the Spike simulator. After cloning, these folders are still empty, 
+because they are references to other repositories. So let us initialize 
+all the submodules (which took me about 15 minutes): </p>
+
+<p><code>git submodule update --recursive --init</code></p>
+
+<p> Now our sub-folders should be populated and our folder is also 
+significantly bigger in size (~2.3 GB). According to the read-me file 
+you might need to run this command a couple of times for it to succeed. </p>
+
+<p> Unlike the instructions in the read-me file, we need to make a 
+couple of changes before we can actually build our project. First, we 
+must check out another branch of buildroot. To do this execute the 
+following commands: </p>
+
+<p><code>
+  cd buildroot<br>
+  git checkout sifive<br>
+  git checkout c4ddfe7a5fd964274c99033bd87df3dc7534d196<br>
+  cd ..
+</code></p>
+
+<p> You may skip the second <code>git checkout</code> command if you 
+like, but I have included it to make sure you are on the exact commit 
+that I used to verify this tutorial. After this initial modification we 
+can run through the first step of building by invoking make, which takes
+ about an hour for me and increases the size of our folder to 9 GB: </p>
+
+<p><code>make</code></p>
+
+<p> Afterwards, we can make our second modification, which we can do by editing <code>conf/linux_defconfig</code> We will change line 56 to:</p>
+
+<p><code>CONFIG_HVC_RISCV_SBI=y</code></p>
+
+<p> You may use your favorite text editor for this. One example is to use the standard GUI text editor in Ubuntu: </p>
+
+<p><code>gedit conf/linux_defconfig</code></p>
+
+<p> For clarity here is the diff of conf/linux_defconfig after the edit: </p>
+
+<pre>diff --git a/conf/linux_defconfig b/conf/linux_defconfig
+index cd87340..db83d12 100644
+--- a/conf/linux_defconfig
++++ b/conf/linux_defconfig
+@@ -53,7 +53,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
+ CONFIG_SERIAL_OF_PLATFORM=y
+ CONFIG_SERIAL_SIFIVE=y
+ CONFIG_SERIAL_SIFIVE_CONSOLE=y
+-# CONFIG_HVC_RISCV_SBI is not set
++CONFIG_HVC_RISCV_SBI=y
+ CONFIG_VIRTIO_CONSOLE=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_I2C=y
+</pre>
+
+<h2> Booting Linux </h2>
+
+<p> Finally, to complete our build as well as run our Spike simulator, 
+we can run the final build command, which took me about 9 minutes in the
+ first instance: </p>
+
+<p><code>make sim</code></p>
+
+<p> This is also the command that you need to run on sub-sequent runs. <code>make sim</code> should run a lot quicker once the building is done. Upon booting of Linux, you should be greeted with the SiFive logo: </p>
+
+<pre>         5555555555555555555555555
+        5555                   5555
+       5555                     5555
+      5555                       5555
+     5555       5555555555555555555555
+    5555       555555555555555555555555
+   5555                             5555
+  5555                               5555
+ 5555                                 5555
+5555555555555555555555555555          55555
+ 55555           555555555           55555
+   55555           55555           55555
+     55555           5           55555
+       55555                   55555
+         55555               55555
+           55555           55555
+             55555       55555
+               55555   55555
+                 555555555
+                   55555
+                     5
+
+</pre>
+
+<p> To log in use the following login credentials: </p>
+
+<p>Username: <b>root</b><br>
+Password: <b>sifive</b><br></p>
+
+<p> This gives you a complete Buildroot Linux to play with. To shut down this version of linux, you can use the <code>halt</code> command. </p>
+
+<h2> Modifying Root Filesystem </h2>
+<p> In this section, we will talk about how to put your own programs 
+onto the Spike simulator to run. The way that I do this is by making a 
+change to the target file system. Making a change in a file that causes a
+ re-build and then running Linux again. </p>
+
+<p> To make a change in our root file system, you should add any file you want into <code>work/buildroot_initramfs_sysroot/</code> This folder contains the root file system of the Linux that you're running on Spike. </p>
+
+<p> Once you've added your files, make a small change to <code>conf/linux_defconfig</code>
+ For example, you can add a new comment character (#) to the end of the 
+file. This simply forces the make command to look at your updated file 
+system. </p>
+
+<p> Once that is done you can re-run your run command <code>make sim</code> After logging in you should see the files you put into the root file system. </p>
+
+<p> To make this job a bit quicker, I made a small bash script to do the
+ compile software and copy the executible files to the root file system 
+directory and the rest of the update process. This is what my script 
+looks like: </p>
+
+<p><code>
+#!/bin/sh -x<br>
+SIFIVE_DIR=/path/to/your/freedom-u-sdk<br>
+SOURCE_DIR=/path/to/your/sources<br>
+cd $SOURCE_DIR<br>
+make<br>
+sudo cp $SOURCE_DIR/*.exe $SIFIVE_DIR/work/buildroot_initramfs_sysroot/usr/<br>
+echo "#" &gt;&gt; $SIFIVE_DIR/conf/linux_defconfig<br>
+cd $SIFIVE_DIR<br>
+make sim<br>
+</code></p>
+
+<p> Make sure to change your directory paths. The reason why I use sudo 
+for the copy command is because I want the owner of the files to be root
+ once I boot up Linux on Spike, since root is the only user that exists 
+by default on our build. </p>
+
+<h2> Adding Syscalls to the Kernel </h2>
+<p> Let's say you want to add a syscall called mycall. I've adapted the instructions in this section from <a href="http://www.tldp.org/HOWTO/html_single/Implement-Sys-Call-Linux-2.6-i386/">Amit Choudhary</a>. Make the following modifications in the linux directory: </p>
+
+<p></p><ul>
+  <li> To file <code>linux/drivers/Makefile</code> add <code>obj-y += mycall/</code> </li>
+  <li> Create folder <code>linux/drivers/mycall</code> </li>
+  <li> Create file <code>linux/drivers/mycall/Makefile</code> with content <code>obj-y := mycall.o</code> </li>
+  <li> In file <code>linux/include/linux/syscall.h</code> insert <code>asmlinkage long sys_mycall(int i);</code> at line 943 </li>
+  <li> In file <code>linux/uapi/asm-generic/unistd.h</code> insert <code>#define __NR_mycall 292</code> and <code>__SYSCALL(__NR_mycall, sys_mycall)</code> at line 735 </li>
+  <li> In the same file change the value of <code>__NR_syscalls</code> to <code>293</code> </li>
+</ul><p></p>
+
+<p> Create a file <code>linux/drivers/mycall/mycall.c</code> with the following content: </p>
+
+<p><code>
+#include&lt;linux/linkage.h&gt;<br>
+<br>
+asmlinkage long sys_mycall(int i) {<br>
+ return i+10;<br>
+}<br>
+</code></p>
+
+<p>Now to test the new syscall, use the following C code, which should output 25: </p>
+
+<p><code>
+#include&lt;asm-generic/unistd.h&gt;<br>
+#include&lt;stdio.h&gt;<br>
+<br>
+long mycall(int i) {<br>
+ return syscall(__NR_mycall, i);<br>
+}<br>
+<br>
+int main(void) {<br>
+ printf("%d\n", mycall(15));<br>
+}<br>
+</code></p>
+
+<p> To compile the test code run <code>riscv64-unknown-linux-gnu-gcc test.c</code> and copy the file, <code>a.out</code> into the file system using the instructions from the previous section. </p>
+
+<p> I hope this tutorial has been useful for you and that it made 
+getting Linux running on Spike less painful than it was for me. Happy 
+hacking! </p>
+
+      </div>
+
+    </main><!-- /.container -->
+
+    <footer class="text-muted">
+      <div class="container">
+        <p>
+          If you have any comments please send an email to: w e b (at the domain) t e c h r o o s e . c o m
+          <br>
+          <a rel="license" href="https://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="Tech%20Roose_files/80x15.png"></a> <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Tech Roose</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Marno van der Maas</span> is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+        </p>
+      </div>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="Tech%20Roose_files/jquery-3.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous">
+    </script>
+    <script src="Tech%20Roose_files/popper.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+    </script>
+    <script src="Tech%20Roose_files/bootstrap.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+    </script>
+  
+
+</body></html>

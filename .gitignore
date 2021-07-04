@@ -54,3 +54,8 @@ dkms.conf
 kernel
 bootloader
 disk/*
+buildroot_initramfs/
+buildroot_rootfs/
+buildroot_initramfs_sysroot/
+src/
+uboot/

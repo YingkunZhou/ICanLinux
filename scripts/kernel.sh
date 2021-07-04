@@ -14,3 +14,4 @@ cp sample/kernel.config ${KERNEL}/.config
 # O=${must be absolute path}
 make -C ${LINUX} O=${PWD}/${KERNEL} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- olddefconfig
 make -C ${LINUX} O=${PWD}/${KERNEL} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- all -j$(nproc)
+# remake -C ${LINUX} O=${PWD}/${KERNEL} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- all --profile
