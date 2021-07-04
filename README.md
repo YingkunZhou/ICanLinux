@@ -7,7 +7,7 @@ There are several dimensions need to pay attention:
 - linux
   * version
   * config
-- riscv-pk(bbl)
+- riscv-pk (bbl)
   * version (latest is good enough)
 - busybox
   * version
@@ -15,6 +15,9 @@ There are several dimensions need to pay attention:
 - buildroot
   * version
   * config
+- u-boot
+- debian image
+- fedora
 
 - qemu
   * version

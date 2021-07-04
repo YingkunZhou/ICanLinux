@@ -15,7 +15,7 @@ dtc -O dtb -I dts -o ${BBL}/system.dtb dts/system.dts
 
 cd ${BBL}
 ${RISCV_PK}/configure --enable-logo --host=riscv64-unknown-elf --with-payload=../kernel/vmlinux #--with-arch=rv64imac
-# if you really need rv64imac, patch 
+# if you really need rv64imac, patch
 # cp ../sample/bbl_logo_file .   # optional
 make -j$(nproc)
 

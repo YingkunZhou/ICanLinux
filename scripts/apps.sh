@@ -8,16 +8,19 @@ if [ -z $(which ${CROSS_COMPILE}-gcc) ]; then
     echo "error: ${CROSS_COMPILE}-gcc not found" && exit 1
 fi
 
-make -C riscv-rootfs
+make -C riscv-rootfs RISCV=${RISCV}
 
 # TODO: well, linux kernel v4.19 works but the latest v5.13 (master branch) failed, still looking for the reason!!!
+# FIXME: now, only failed in the latest version v5.13 (still in Development stage), so don't try it.
+# the recommendation of kernel version is v5.4.x or v5.10.x because they are LTS
+
 mkdir -p ${KERNEL}
-cp conf/emu_defconfig ${KERNEL}/.config
 # make ARCH=riscv CROSS_COMPILE=${CROSS_COMPILE}- oldconfig
 # O=${must be absolute path}
+cp conf/emu_defconfig ${KERNEL}/.config
 make -C ${LINUX} O=${PWD}/${KERNEL} RISCV_ROOTFS_HOME=${PWD}/${RISCV_ROOTFS} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- olddefconfig
-make -C ${LINUX} O=${PWD}/${KERNEL} RISCV_ROOTFS_HOME=${PWD}/${RISCV_ROOTFS} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- all -j$(nproc)
+make -C ${LINUX} O=${PWD}/${KERNEL} RISCV_ROOTFS_HOME=${PWD}/${RISCV_ROOTFS} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- vmlinux -j$(nproc)
 # remake -C ${LINUX} O=${PWD}/${KERNEL} ARCH=${ISA} CROSS_COMPILE=${CROSS_COMPILE}- all --profile
 
 # and then, bbl.sh
-./scripts/bbl_apps.sh
+./scripts/apps-bbl.sh

@@ -1,6 +1,6 @@
 $(shell mkdir -p rootfsimg/build)
 
-APPS = hello stream redis dwarf/md5 dwarf/sort dwarf/wordcount
+APPS = hello stream redis dwarf/md5 dwarf/sort dwarf/wordcount zlib # strace
 APPS_DIR = $(addprefix apps/, $(APPS))
 
 ROOTFS_PATH := $(abspath .)

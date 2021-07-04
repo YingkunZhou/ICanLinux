@@ -30,7 +30,7 @@ file /bin/busybox ${RISCV_ROOTFS_HOME}/rootfsimg/build/busybox 755 0 0
 file /etc/inittab ${RISCV_ROOTFS_HOME}/rootfsimg/inittab 755 0 0
 file /etc/passwd ${RISCV_ROOTFS_HOME}/rootfsimg/etc/passwd 755 0 0
 file /etc/group ${RISCV_ROOTFS_HOME}/rootfsimg/etc/group 755 0 0
-file /etc/profile ${RISCV_ROOTFS_HOME}/rootfsimg/profile 755 0 0
+file /etc/profile ${RISCV_ROOTFS_HOME}/rootfsimg/etc/profile 755 0 0
 slink /init /bin/busybox 755 0 0
 
 dir /root/benchmark 755 0 0
@@ -79,8 +79,9 @@ slink /root/dwarf/wordcount/run.sh /root/dwarf/run/run.sh 777 0 0
 
 #dropbear ssh (only used to login)
 dir /etc/dropbear 755 0 0
-file /bin/ssh-dropbear ${RISCV_ROOTFS_HOME}/rootfsimg/build/ssh-dropbear 755 0 0
-slink /bin/ssh /bin/ssh-dropbear 755 0 0
+file /bin/dropbear ${RISCV_ROOTFS_HOME}/rootfsimg/build/dropbear 755 0 0
+slink /bin/ssh /bin/dropbear 755 0 0
+
 #dropbear ssh dependencies
 file /lib/libcrypt.so.1 ${RISCV}/sysroot/lib/libcrypt.so.1 755 0 0
 file /lib/libnss_files.so.2 ${RISCV}/sysroot/lib/libnss_files.so.2 755 0 0
@@ -93,5 +94,5 @@ slink /lib/libz.so /lib/libz.so.1.2.11 755 0 0
 slink /lib/libz.so.1 /lib/libz.so.1.2.11 755 0 0
 
 #strace
-file /bin/strace ${RISCV_ROOTFS_HOME}/rootfsimg/build/strace 755 0 0
-file /lib/librt.so.1 ${RISCV}/sysroot/lib/librt.so.1 755 0 0
+#file /bin/strace ${RISCV_ROOTFS_HOME}/rootfsimg/build/strace 755 0 0
+#file /lib/librt.so.1 ${RISCV}/sysroot/lib/librt.so.1 755 0 0
