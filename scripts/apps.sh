@@ -8,7 +8,9 @@ if [ -z $(which ${CROSS_COMPILE}-gcc) ]; then
     echo "error: ${CROSS_COMPILE}-gcc not found" && exit 1
 fi
 
-make -C riscv-rootfs RISCV=${RISCV}
+make -C ${RISCV_ROOTFS} RISCV=${RISCV}
+cp ${BUSYBOX}/busybox ${RISCV_ROOTFS}/rootfsimg/build
+cp ${DROPBEAR}/dropbear ${RISCV_ROOTFS}/rootfsimg/build
 
 # TODO: well, linux kernel v4.19 works but the latest v5.13 (master branch) failed, still looking for the reason!!!
 # FIXME: now, only failed in the latest version v5.13 (still in Development stage), so don't try it.
